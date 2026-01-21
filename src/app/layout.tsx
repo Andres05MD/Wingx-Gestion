@@ -15,7 +15,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Wingx Stock",
+  title: "Wingx Gestion",
   description: "Sistema de control de inventario",
 };
 

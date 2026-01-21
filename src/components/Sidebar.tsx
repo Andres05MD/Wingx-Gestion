@@ -39,8 +39,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     return (
         <aside
             className={`fixed inset-x-0 bottom-0 z-50 w-full lg:w-[280px] lg:inset-y-0 lg:left-0 lg:bottom-auto transform transition-transform duration-300 ease-out 
-                ${isOpen ? 'translate-y-0 lg:translate-x-0' : 'translate-y-full lg:-translate-x-full lg:translate-y-0'} 
-                lg:static lg:h-screen lg:bg-transparent h-full lg:h-auto shadow-none bg-[#0f172a] lg:bg-transparent`}
+                ${isOpen ? 'translate-y-0' : 'translate-y-full'} 
+                lg:translate-y-0 lg:translate-x-0 lg:static lg:h-screen lg:bg-transparent h-full lg:h-auto shadow-none bg-[#0f172a] lg:bg-transparent`}
         >
             <div className="h-full lg:p-4">
                 <div className="h-full flex flex-col bg-slate-900/80 backdrop-blur-xl border-r border-white/5 lg:border lg:rounded-2xl lg:shadow-2xl lg:shadow-black/20">
