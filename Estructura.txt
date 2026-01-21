@@ -1,0 +1,85 @@
+Idioma: Español
+Tecnologías Principales: Next.js 15+, React 19, TailwindCSS 4, Firebase, SweetAlert2, Lucide React, Date-fns.
+
+Descripción General:
+Sistema web para la gestión integral de una tienda de ropa (Wingx). Permite el control de inventario, pedidos, clientes y producción. Incluye un sistema de autenticación multi-usuario y un dashboard administrativo con estadísticas.
+
+Estructura de Directorios (Source):
+/src
+├── /app                 # Rutas de la aplicación (App Router)
+│   ├── /agenda          # Calendario de pedidos
+│   ├── /clientes        # Gestión de clientes (Lista y Detalle)
+│   ├── /inventario      # Inventario de productos terminados
+│   ├── /login           # Pantalla de inicio de sesión
+│   ├── /materiales      # Gestión de insumos y materiales
+│   ├── /pedidos         # Gestión de pedidos (Lista, Crear, Detalle)
+│   ├── /prendas         # Catálogo de prendas (Lista, Crear, Detalle)
+│   ├── layout.tsx       # Layout principal
+│   └── page.tsx         # Dashboard principal
+├── /components          # Componentes de interfaz
+│   ├── /dashboard       # Componentes específicos del dashboard
+│   │   ├── OrdersList   # Lista de pedidos recientes
+│   │   ├── QuickActions # Botones de acción rápida
+│   │   └── StatsGrid    # Grid de estadísticas
+│   ├── AdminDashboard   # Contenedor del dashboard
+│   ├── BsBadge          # Badge para montos en Bolívares
+│   ├── ClientForm       # Formulario de clientes
+│   ├── ErrorBoundary    # Manejo de errores de UI
+│   ├── ExchangeRate...  # Widget de tasa de cambio
+│   ├── GarmentForm      # Formulario de prendas
+│   ├── LoadingSpinner   # Indicador de carga
+│   ├── OrderForm        # Formulario de pedidos
+│   ├── Shell            # Layout principal con Sidebar
+│   └── Sidebar          # Navegación lateral
+├── /context             # Estados globales (React Context)
+│   ├── AuthContext      # Autenticación
+│   ├── ClientsContext   # Estado de clientes
+│   ├── ExchangeRate...  # Tasa de cambio
+│   ├── GarmentsContext  # Estado de prendas
+│   ├── MaterialsContext # Estado de materiales
+│   └── OrdersContext    # Estado de pedidos
+├── /hooks               # Hooks personalizados
+│   └── useDebounce      # Hook para búsqueda optimizada
+├── /lib                 # Configuraciones externas
+│   └── firebase.ts      # Inicialización de Firebase
+└── /services            # Lógica de negocio
+    └── storage.ts       # Servicios de Storage (Firebase)
+
+Módulos Funcionales:
+
+1. Autenticación (Auth):
+   - Inicio de sesión seguro.
+   - Identificación de "owner" para separación de datos.
+   - Protección de rutas.
+
+2. Dashboard Principal:
+   - Estadísticas clave (Usuarios, Pedidos, Productos).
+   - Acciones rápidas.
+   - Lista de pedidos recientes.
+
+3. Gestión de Prendas:
+   - Catálogo de productos que se pueden fabricar.
+   - Definición de costos y precios de venta.
+   - Creación y edición de prendas.
+
+4. Gestión de Clientes:
+   - Registro y edición de clientes.
+   - Historial y detalles de cliente.
+
+5. Gestión de Pedidos:
+   - Creación y seguimiento de pedidos.
+   - Ciclo de vida (Sin comenzar, Pendiente, En proceso, Entregado).
+   - Asociación con clientes y prendas.
+
+6. Inventario (Stock):
+   - Control de productos listos para entrega inmediata.
+
+7. Materiales:
+   - Lista de materiales requeridos para producción.
+   - Gestión de compras pendientes.
+
+8. Agenda:
+   - Visualización de calendario de pedidos.
+
+9. Configuración Global:
+   - Tasa de cambio global para cálculos de precios (Bs.).

@@ -1,0 +1,127 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Funciones de Ayuda (Helpers) ---
+
+    // Verifica si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verifica si el userId coincide con el usuario autenticado
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Obtiene el rol del usuario actual
+    function getUserRole() {
+      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    // Verifica si el usuario tiene rol de administrador
+    function isAdmin() {
+      return getUserRole() == 'admin';
+    }
+
+    // Verifica si el usuario tiene rol de gestor de tienda
+    function isStoreManager() {
+      return getUserRole() == 'store';
+    }
+
+    // Verifica si el usuario puede gestionar la tienda (admin o store)
+    function canManageStore() {
+      return isAdmin() || isStoreManager();
+    }
+
+    // Verifica si el documento existente pertenece al usuario (campo ownerId)
+    function isResourceOwner() {
+      return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Verifica si el documento a crear/actualizar pertenecerá al usuario (campo ownerId)
+    function willBeResourceOwner() {
+      return isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    // --- Reglas para la Colección de Usuarios ---
+    match /users/{userId} {
+      // Leer: El propio usuario o administradores
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Crear: Permitir creación al registrarse (el usuario debe ser el owner)
+      // Se previene que un usuario normal se asigne rol 'admin' o 'store' al crear
+      allow create: if isOwner(userId) && 
+        (!('role' in request.resource.data) || 
+         request.resource.data.role == 'user' || 
+         isAdmin());
+      
+      // Actualizar: Solo administradores pueden cambiar roles
+      // El propio usuario puede actualizar su perfil pero NO su rol
+      allow update: if isAdmin() || (
+        isOwner(userId) && 
+        (!('role' in request.resource.data) || 
+         request.resource.data.role == resource.data.role)
+      );
+      
+      // Borrar: Solo administradores
+      allow delete: if isAdmin();
+    }
+
+    // --- Reglas para la Tienda: Productos ---
+    match /productos/{productoId} {
+      // Lectura pública: Cualquiera puede ver los productos (para la tienda pública)
+      allow read: if true;
+      
+      // Crear: Solo usuarios con rol 'admin' o 'store'
+      allow create: if canManageStore();
+      
+      // Actualizar: Solo usuarios con rol 'admin' o 'store'
+      allow update: if canManageStore();
+      
+      // Eliminar: Solo usuarios con rol 'admin' o 'store'
+      allow delete: if canManageStore();
+    }
+
+    // --- Reglas para Pedidos (Gestion y Tienda) ---
+    match /orders/{orderId} {
+      // Crear: Permitir a cualquier usuario (Guest o Auth)
+      allow create: if true;
+
+      // Leer: Admins, Store Managers, o el propio cliente (Usuario de la Tienda)
+      allow read: if canManageStore() || (isAuthenticated() && resource.data.customer.userId == request.auth.uid);
+
+      // Actualizar: Solo personal autorizado
+      allow update: if canManageStore();
+      
+      // Borrar: Solo Admins
+      allow delete: if isAdmin();
+    }
+
+    // --- Reglas para Colecciones de Datos (con ownerId) ---
+    // Aplica a: garments, clients, materials, stock, supplies, events
+    match /{collectionName}/{docId} {
+      
+      function isKnownCollection() {
+        return collectionName in ['garments', 'clients', 'materials', 'stock', 'supplies', 'events'];
+      }
+
+      // Leer: Dueño o Admin
+      allow read: if isKnownCollection() && (isResourceOwner() || isAdmin());
+      
+      // Crear: Debe ser el dueño (ownerId == uid)
+      allow create: if isKnownCollection() && willBeResourceOwner();
+      
+      // Actualizar: Dueño o Admin. No se puede transferir propiedad (cambiar ownerId) a menos que seas Admin.
+      allow update: if isKnownCollection() && 
+        (isResourceOwner() || isAdmin()) &&
+        (willBeResourceOwner() || isAdmin());
+
+      // Borrar: Dueño o Admin
+      allow delete: if isKnownCollection() && (isResourceOwner() || isAdmin());
+    }
+  }
+}
