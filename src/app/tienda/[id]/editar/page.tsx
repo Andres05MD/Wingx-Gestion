@@ -542,27 +542,29 @@ export default function EditProductPage() {
                                     <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 block">
                                         Agregar Color Personalizado
                                     </label>
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="color"
-                                            value={newColorHex}
-                                            onChange={(e) => setNewColorHex(e.target.value)}
-                                            className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 hover:border-purple-400 transition-colors"
-                                            title="Seleccionar color"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Nombre del color..."
-                                            value={newColorName}
-                                            onChange={(e) => setNewColorName(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomColor())}
-                                            className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                                        />
+                                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                        <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
+                                            <input
+                                                type="color"
+                                                value={newColorHex}
+                                                onChange={(e) => setNewColorHex(e.target.value)}
+                                                className="w-10 h-10 sm:w-10 sm:h-10 rounded-lg cursor-pointer border-2 border-white/20 hover:border-purple-400 transition-colors shrink-0"
+                                                title="Seleccionar color"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre del color..."
+                                                value={newColorName}
+                                                onChange={(e) => setNewColorName(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomColor())}
+                                                className="flex-1 px-3 py-2.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 w-full"
+                                            />
+                                        </div>
                                         <button
                                             type="button"
                                             onClick={handleAddCustomColor}
                                             disabled={!newColorName.trim()}
-                                            className="px-3 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-300 hover:bg-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                                            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-300 hover:bg-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1 font-medium active:scale-95"
                                         >
                                             <Plus className="w-4 h-4" />
                                             Agregar
