@@ -12,6 +12,7 @@
     "@types/react-datepicker": "^6.2.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.7.0",
+    "framer-motion": "^12.29.0",
     "imagekit": "^6.0.0",
     "imagekitio-react": "^4.3.0",
     "lucide-react": "^0.562.0",

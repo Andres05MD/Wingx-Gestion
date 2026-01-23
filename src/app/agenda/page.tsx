@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Trash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Trash, LayoutGrid, List } from 'lucide-react';
 import { getEvents, saveEvent, deleteEvent, CalendarEvent } from '@/services/storage';
 import Swal from 'sweetalert2';
 import { useOrders } from '@/context/OrdersContext';
@@ -27,6 +27,7 @@ export default function AgendaPage() {
     const { orders } = useOrders(); // ✅ Consumir contexto global
 
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [view, setView] = useState<'calendar' | 'list'>('calendar');
     const [storedEvents, setStoredEvents] = useState<CalendarEvent[]>([]); // Solo eventos manuales
     const [events, setEvents] = useState<CalendarEvent[]>([]); // Combinados
     const [selectedDate, setSelectedDate] = useState<string | null>(null); // YYYY-MM-DD
@@ -178,19 +179,37 @@ export default function AgendaPage() {
     }
 
     return (
-        <div className="space-y-6 flex flex-col h-full bg-slate-950 pb-6"> {/* Ensure full height context if needed */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
-                            <CalendarIcon className="w-6 h-6 text-white" />
-                        </div>
-                        Agenda
-                    </h1>
-                    <p className="text-slate-400 text-sm mt-1 ml-13">Organiza entregas y eventos</p>
+        <div className="space-y-4 md:space-y-6 flex flex-col h-[calc(100dvh-180px)] md:h-[calc(100vh-100px)] bg-slate-950 md:pb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 shrink-0">
+                <div className="flex items-center justify-between md:justify-start gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                                <CalendarIcon className="w-6 h-6 text-white" />
+                            </div>
+                            Agenda
+                        </h1>
+                        <p className="text-slate-400 text-sm mt-1 ml-13">Organiza entregas y eventos</p>
+                    </div>
+
+                    {/* View Toggle - Mobile: Visible, Desktop: Visible */}
+                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 md:ml-6">
+                        <button
+                            onClick={() => setView('calendar')}
+                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                        >
+                            <LayoutGrid size={18} />
+                        </button>
+                        <button
+                            onClick={() => setView('list')}
+                            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                        >
+                            <List size={18} />
+                        </button>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg shadow-black/10">
+                <div className="flex items-center gap-4 bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg shadow-black/10 self-center md:self-auto">
                     <button onClick={handlePrevMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95"><ChevronLeft size={20} /></button>
                     <span className="font-bold text-lg text-white w-40 text-center select-none tracking-wide">{MONTH_NAMES[month]} {year}</span>
                     <button onClick={handleNextMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95"><ChevronRight size={20} /></button>
@@ -198,16 +217,67 @@ export default function AgendaPage() {
             </div>
 
             <div className="flex-1 bg-gradient-to-br from-white/[0.03] to-white/[0.005] backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl shadow-black/20 overflow-hidden flex flex-col">
-                <div className="grid grid-cols-7 border-b border-white/10 bg-white/[0.02]">
-                    {DAYS_OF_WEEK.map(day => (
-                        <div key={day} className="py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
-                            {day}
+                {view === 'calendar' ? (
+                    <>
+                        <div className="grid grid-cols-7 border-b border-white/10 bg-white/[0.02]">
+                            {DAYS_OF_WEEK.map(day => (
+                                <div key={day} className="py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                    {day}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <div className="grid grid-cols-7 flex-1 auto-rows-fr overflow-y-auto">
-                    {calendarDays}
-                </div>
+                        <div className="grid grid-cols-7 flex-1 auto-rows-fr overflow-y-auto">
+                            {calendarDays}
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            const dayEvents = events.filter(e => e.date === dateStr);
+                            const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
+                            const dayOfWeek = DAYS_OF_WEEK[new Date(year, month, day).getDay()];
+
+                            return (
+                                <div key={day} className={`flex gap-4 p-4 rounded-2xl border transition-all ${isToday ? 'bg-white/[0.03] border-pink-500/30 shadow-lg shadow-pink-500/5' : 'bg-transparent border-white/5 hover:bg-white/[0.02]'}`}>
+                                    <div className="flex flex-col items-center min-w-[3.5rem]">
+                                        <span className="text-xs font-bold text-slate-500 uppercase">{dayOfWeek}</span>
+                                        <span className={`text-2xl font-bold mt-1 ${isToday ? 'text-pink-500' : 'text-white'}`}>{day}</span>
+                                    </div>
+                                    <div className="flex-1 space-y-2 border-l border-white/10 pl-4 py-1">
+                                        {dayEvents.length > 0 ? (
+                                            dayEvents.map(event => (
+                                                <div
+                                                    key={event.id}
+                                                    onClick={(e) => handleEventClick(event, e)}
+                                                    className={`p-3 rounded-xl border cursor-pointer transition-all hover:scale-[1.01] flex items-center justify-between
+                                                        ${event.type === 'delivery' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' :
+                                                            event.type === 'meeting' ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' :
+                                                                'bg-slate-700/20 border-slate-600/30 text-slate-400'}`}
+                                                >
+                                                    <span className="font-medium truncate">{event.title}</span>
+                                                    <span className="text-[10px] opacity-70 border border-white/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                                        {event.type === 'delivery' ? 'Entrega' : event.type === 'meeting' ? 'Cita' : 'Otro'}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="h-full flex items-center">
+                                                <button
+                                                    onClick={() => handleDayClick(day)}
+                                                    className="text-sm text-slate-600 hover:text-slate-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+                                                >
+                                                    <Plus size={14} />
+                                                    Sin eventos
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             {/* Event Details Modal */}
