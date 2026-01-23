@@ -219,13 +219,14 @@ export default function TiendaPage() {
                                         <Palette className="w-3 h-3 text-slate-500" />
                                         <div className="flex flex-wrap gap-1">
                                             {product.colors.slice(0, 6).map((color, idx) => {
+                                                const combinedColorMap = { ...COLOR_MAP, ...(product.customColorMap || {}) };
                                                 const isLight = ['Blanco', 'Crema', 'Beige', 'Amarillo', 'Gris Claro', 'Lavanda', 'Menta'].includes(color);
                                                 return (
                                                     <div
                                                         key={idx}
                                                         title={color}
                                                         className={`w-4 h-4 rounded-full ${isLight ? 'border border-slate-600' : ''}`}
-                                                        style={{ backgroundColor: COLOR_MAP[color] || '#888888' }}
+                                                        style={{ backgroundColor: combinedColorMap[color] || '#888888' }}
                                                     />
                                                 );
                                             })}

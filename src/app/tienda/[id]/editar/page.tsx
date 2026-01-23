@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getStoreProductById, updateStoreProduct, StoreProduct } from "@/services/storage";
 import Swal from "sweetalert2";
-import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette } from "lucide-react";
+import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { IKContext, IKUpload } from 'imagekitio-react';
 
@@ -54,6 +54,9 @@ export default function EditProductPage() {
     const [images, setImages] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
+    const [customColorMap, setCustomColorMap] = useState<Record<string, string>>({});
+    const [newColorName, setNewColorName] = useState('');
+    const [newColorHex, setNewColorHex] = useState('#6366f1');
     const [gender, setGender] = useState<'Hombre' | 'Mujer' | 'Unisex'>('Unisex');
     const [featured, setFeatured] = useState(false);
 
@@ -99,6 +102,7 @@ export default function EditProductPage() {
                 setImages(product.images || (product.imageUrl ? [product.imageUrl] : []));
                 setSelectedSizes(product.sizes || []);
                 setSelectedColors(product.colors || []);
+                setCustomColorMap(product.customColorMap || {});
                 setGender(product.gender || 'Unisex');
                 setFeatured(product.featured || false);
             } else {
@@ -129,6 +133,29 @@ export default function EditProductPage() {
         }
     };
 
+    const handleAddCustomColor = () => {
+        const trimmedName = newColorName.trim();
+        if (!trimmedName) return;
+
+        const existsInPredefined = AVAILABLE_COLORS.some(c => c.name.toLowerCase() === trimmedName.toLowerCase());
+        const existsInCustom = Object.keys(customColorMap).some(c => c.toLowerCase() === trimmedName.toLowerCase());
+
+        if (existsInPredefined || existsInCustom) {
+            return;
+        }
+
+        setCustomColorMap({ ...customColorMap, [trimmedName]: newColorHex });
+        setSelectedColors([...selectedColors, trimmedName]);
+        setNewColorName('');
+        setNewColorHex('#6366f1');
+    };
+
+    const handleRemoveCustomColor = (colorName: string) => {
+        const { [colorName]: _, ...rest } = customColorMap;
+        setCustomColorMap(rest);
+        setSelectedColors(selectedColors.filter(c => c !== colorName));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -142,6 +169,7 @@ export default function EditProductPage() {
             images,
             sizes: selectedSizes,
             colors: selectedColors,
+            customColorMap: Object.keys(customColorMap).length > 0 ? customColorMap : undefined,
             gender,
             featured
         };
@@ -508,6 +536,64 @@ export default function EditProductPage() {
                                         ))}
                                     </div>
                                 )}
+
+                                {/* Custom Colors */}
+                                <div className="mt-4 pt-4 border-t border-white/10">
+                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 block">
+                                        Agregar Color Personalizado
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="color"
+                                            value={newColorHex}
+                                            onChange={(e) => setNewColorHex(e.target.value)}
+                                            className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 hover:border-purple-400 transition-colors"
+                                            title="Seleccionar color"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre del color..."
+                                            value={newColorName}
+                                            onChange={(e) => setNewColorName(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomColor())}
+                                            className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleAddCustomColor}
+                                            disabled={!newColorName.trim()}
+                                            className="px-3 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-300 hover:bg-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            Agregar
+                                        </button>
+                                    </div>
+
+                                    {/* Custom colors list */}
+                                    {Object.keys(customColorMap).length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-3">
+                                            {Object.entries(customColorMap).map(([colorName, colorHex]) => (
+                                                <div
+                                                    key={colorName}
+                                                    className="flex items-center gap-2 bg-white/5 rounded-full pl-1 pr-2 py-1 border border-white/10"
+                                                >
+                                                    <div
+                                                        className="w-6 h-6 rounded-full border border-white/20"
+                                                        style={{ backgroundColor: colorHex }}
+                                                    />
+                                                    <span className="text-xs text-slate-300">{colorName}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveCustomColor(colorName)}
+                                                        className="text-slate-400 hover:text-red-400 transition-colors"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                         </div>

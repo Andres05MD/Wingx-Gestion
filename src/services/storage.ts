@@ -297,6 +297,7 @@ export interface StoreProduct {
     categories: string[];
     sizes: string[];
     colors?: string[]; // Available colors
+    customColorMap?: Record<string, string>; // Custom colors: { colorName: hexValue }
     imageUrl: string;
     images?: string[]; // Multiple images support
     gender?: 'Hombre' | 'Mujer' | 'Unisex';
