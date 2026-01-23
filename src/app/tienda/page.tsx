@@ -2,10 +2,39 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Trash, ShoppingBag, Shirt, Edit } from 'lucide-react';
+import { Plus, Search, Trash, ShoppingBag, Shirt, Edit, Palette } from 'lucide-react';
 import { getStoreProducts, deleteStoreProduct, StoreProduct } from '@/services/storage';
 import Swal from 'sweetalert2';
 import { useAuth } from "@/context/AuthContext";
+
+// Mapa de colores para visualización
+const COLOR_MAP: Record<string, string> = {
+    'Negro': '#000000',
+    'Blanco': '#FFFFFF',
+    'Rojo': '#EF4444',
+    'Azul': '#3B82F6',
+    'Azul Marino': '#1E3A5F',
+    'Azul Cielo': '#87CEEB',
+    'Verde': '#22C55E',
+    'Verde Oliva': '#556B2F',
+    'Amarillo': '#EAB308',
+    'Naranja': '#F97316',
+    'Rosa': '#EC4899',
+    'Morado': '#A855F7',
+    'Gris': '#6B7280',
+    'Gris Claro': '#D1D5DB',
+    'Marrón': '#92400E',
+    'Beige': '#D4B896',
+    'Crema': '#FFFDD0',
+    'Coral': '#FF7F50',
+    'Turquesa': '#40E0D0',
+    'Lavanda': '#E6E6FA',
+    'Borgoña': '#800020',
+    'Terracota': '#E2725B',
+    'Menta': '#98FF98',
+    'Vino': '#722F37',
+    'Caqui': '#C3B091'
+};
 
 export default function TiendaPage() {
     const { role, user, loading: authLoading } = useAuth();
@@ -183,6 +212,29 @@ export default function TiendaPage() {
                                         {product.sizes?.join(', ') || 'N/A'}
                                     </span>
                                 </div>
+
+                                {/* Colores disponibles */}
+                                {product.colors && product.colors.length > 0 && (
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Palette className="w-3 h-3 text-slate-500" />
+                                        <div className="flex flex-wrap gap-1">
+                                            {product.colors.slice(0, 6).map((color, idx) => {
+                                                const isLight = ['Blanco', 'Crema', 'Beige', 'Amarillo', 'Gris Claro', 'Lavanda', 'Menta'].includes(color);
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        title={color}
+                                                        className={`w-4 h-4 rounded-full ${isLight ? 'border border-slate-600' : ''}`}
+                                                        style={{ backgroundColor: COLOR_MAP[color] || '#888888' }}
+                                                    />
+                                                );
+                                            })}
+                                            {product.colors.length > 6 && (
+                                                <span className="text-[10px] text-slate-500 ml-1">+{product.colors.length - 6}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="pt-4 border-t border-white/5 mt-auto flex items-center justify-between">

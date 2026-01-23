@@ -56,6 +56,7 @@ interface OrderItem {
     price: number;
     quantity: number;
     selectedSize?: string;
+    selectedColor?: string;
 }
 
 interface PendingOrder {
@@ -556,7 +557,8 @@ export default function VerificacionPagosPage() {
                                                     {order.items?.map((item, i) => (
                                                         <p key={i} className="text-slate-300">
                                                             • {item.quantity}x {item.name}
-                                                            {item.selectedSize && ` (${item.selectedSize})`}
+                                                            {item.selectedSize && ` (Talla: ${item.selectedSize})`}
+                                                            {item.selectedColor && ` - ${item.selectedColor}`}
                                                         </p>
                                                     ))}
                                                     <p className="text-slate-500 text-xs mt-2">

@@ -4,9 +4,38 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getStoreProductById, updateStoreProduct, StoreProduct } from "@/services/storage";
 import Swal from "sweetalert2";
-import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star } from "lucide-react";
+import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette } from "lucide-react";
 import Link from "next/link";
 import { IKContext, IKUpload } from 'imagekitio-react';
+
+// Available colors with their hex values
+const AVAILABLE_COLORS: { name: string; hex: string }[] = [
+    { name: 'Negro', hex: '#000000' },
+    { name: 'Blanco', hex: '#FFFFFF' },
+    { name: 'Rojo', hex: '#EF4444' },
+    { name: 'Azul', hex: '#3B82F6' },
+    { name: 'Azul Marino', hex: '#1E3A5F' },
+    { name: 'Azul Cielo', hex: '#87CEEB' },
+    { name: 'Verde', hex: '#22C55E' },
+    { name: 'Verde Oliva', hex: '#556B2F' },
+    { name: 'Amarillo', hex: '#EAB308' },
+    { name: 'Naranja', hex: '#F97316' },
+    { name: 'Rosa', hex: '#EC4899' },
+    { name: 'Morado', hex: '#A855F7' },
+    { name: 'Gris', hex: '#6B7280' },
+    { name: 'Gris Claro', hex: '#D1D5DB' },
+    { name: 'Marrón', hex: '#92400E' },
+    { name: 'Beige', hex: '#D4B896' },
+    { name: 'Crema', hex: '#FFFDD0' },
+    { name: 'Coral', hex: '#FF7F50' },
+    { name: 'Turquesa', hex: '#40E0D0' },
+    { name: 'Lavanda', hex: '#E6E6FA' },
+    { name: 'Borgoña', hex: '#800020' },
+    { name: 'Terracota', hex: '#E2725B' },
+    { name: 'Menta', hex: '#98FF98' },
+    { name: 'Vino', hex: '#722F37' },
+    { name: 'Caqui', hex: '#C3B091' }
+];
 
 export default function EditProductPage() {
     const router = useRouter();
@@ -24,6 +53,7 @@ export default function EditProductPage() {
     const [imageUrl, setImageUrl] = useState("");
     const [images, setImages] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+    const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [gender, setGender] = useState<'Hombre' | 'Mujer' | 'Unisex'>('Unisex');
     const [featured, setFeatured] = useState(false);
 
@@ -68,6 +98,7 @@ export default function EditProductPage() {
                 setImageUrl(product.imageUrl);
                 setImages(product.images || (product.imageUrl ? [product.imageUrl] : []));
                 setSelectedSizes(product.sizes || []);
+                setSelectedColors(product.colors || []);
                 setGender(product.gender || 'Unisex');
                 setFeatured(product.featured || false);
             } else {
@@ -90,6 +121,14 @@ export default function EditProductPage() {
         }
     };
 
+    const handleColorToggle = (color: string) => {
+        if (selectedColors.includes(color)) {
+            setSelectedColors(selectedColors.filter(c => c !== color));
+        } else {
+            setSelectedColors([...selectedColors, color]);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -102,6 +141,7 @@ export default function EditProductPage() {
             imageUrl,
             images,
             sizes: selectedSizes,
+            colors: selectedColors,
             gender,
             featured
         };
@@ -424,6 +464,50 @@ export default function EditProductPage() {
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* Colors */}
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                    <Palette className="w-4 h-4 text-rose-400" />
+                                    Colores Disponibles
+                                    {selectedColors.length > 0 && (
+                                        <span className="text-xs text-purple-400 font-normal normal-case">
+                                            ({selectedColors.length} seleccionados)
+                                        </span>
+                                    )}
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {AVAILABLE_COLORS.map(color => {
+                                        const isLight = ['Blanco', 'Crema', 'Beige', 'Amarillo', 'Gris Claro', 'Lavanda', 'Menta'].includes(color.name);
+                                        return (
+                                            <button
+                                                key={color.name}
+                                                type="button"
+                                                title={color.name}
+                                                onClick={() => handleColorToggle(color.name)}
+                                                className={`relative w-10 h-10 rounded-full transition-all border-2 flex items-center justify-center ${selectedColors.includes(color.name)
+                                                    ? 'ring-2 ring-offset-2 ring-purple-500 ring-offset-slate-900 scale-110'
+                                                    : 'hover:scale-110'
+                                                    } ${isLight ? 'border-slate-600' : 'border-transparent'}`}
+                                                style={{ backgroundColor: color.hex }}
+                                            >
+                                                {selectedColors.includes(color.name) && (
+                                                    <div className={`w-4 h-4 rounded-full ${isLight ? 'bg-black/60' : 'bg-white/80'}`} />
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {selectedColors.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {selectedColors.map(color => (
+                                            <span key={color} className="text-xs bg-white/10 text-slate-300 px-2 py-1 rounded-full">
+                                                {color}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                         </div>

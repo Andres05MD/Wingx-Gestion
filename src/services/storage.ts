@@ -296,6 +296,7 @@ export interface StoreProduct {
     price: number;
     categories: string[];
     sizes: string[];
+    colors?: string[]; // Available colors
     imageUrl: string;
     images?: string[]; // Multiple images support
     gender?: 'Hombre' | 'Mujer' | 'Unisex';
