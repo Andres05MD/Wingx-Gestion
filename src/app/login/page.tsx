@@ -3,15 +3,14 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Shirt, Mail, Lock, UserPlus, LogIn, AlertCircle, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, UserPlus, LogIn, AlertCircle, Eye, EyeOff } from "lucide-react";
 import Swal from "sweetalert2";
 
 export default function LoginPage() {
-    const { user, loginWithEmail, registerWithEmail, loginWithGoogle } = useAuth();
+    const { user, loginWithEmail, loginWithGoogle } = useAuth();
     const router = useRouter();
-    const [isRegistering, setIsRegistering] = useState(false);
     const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -36,27 +35,13 @@ export default function LoginPage() {
         }
 
         try {
-            if (isRegistering) {
-                await registerWithEmail(email, password, name);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Cuenta creada',
-                    text: 'Bienvenido a Wingx',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                await loginWithEmail(email, password);
-                // Swal is not needed for login success as we redirect, but we can do a toast if we want.
-            }
+            await loginWithEmail(email, password);
         } catch (err: any) {
             console.error(err);
             let msg = "Ocurrió un error al procesar tu solicitud.";
-            if (err.code === 'auth/email-already-in-use') msg = "El correo ya está registrado.";
             if (err.code === 'auth/invalid-credential') msg = "Credenciales incorrectas.";
             if (err.code === 'auth/user-not-found') msg = "Usuario no encontrado.";
             if (err.code === 'auth/wrong-password') msg = "Contraseña incorrecta.";
-            if (err.code === 'auth/weak-password') msg = "La contraseña es muy débil.";
             setError(msg);
         } finally {
             setLoading(false);
@@ -87,16 +72,23 @@ export default function LoginPage() {
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
             <div className="bg-zinc-950 p-8 rounded-2xl shadow-xl w-full max-w-md border border-zinc-800 space-y-8 animate-in fade-in zoom-in-95 duration-300">
                 <div className="text-center">
-                    <div className="flex justify-center mb-4">
-                        <div className="bg-blue-600/20 p-4 rounded-2xl">
-                            <Shirt className="text-blue-500 w-16 h-16" />
+                    <div className="flex justify-center mb-6">
+                        <div className="relative w-24 h-24 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-inner shadow-black/40 flex items-center justify-center">
+                            <Image
+                                src="https://ik.imagekit.io/xwym4oquc/resources/Isotipo(Invert).png"
+                                alt="Wingx Logo"
+                                width={80}
+                                height={80}
+                                className="object-contain"
+                                priority
+                            />
                         </div>
                     </div>
                     <h1 className="text-3xl font-bold text-white mb-2">
-                        {isRegistering ? "Crear Cuenta" : "Bienvenido a Wingx"}
+                        Bienvenido a Wingx
                     </h1>
-                    <p className="text-zinc-400">
-                        {isRegistering ? "Empieza a gestionar tu taller hoy" : "Gestiona tus costuras y pedidos"}
+                    <p className="text-zinc-500 text-sm font-medium">
+                        Gestiona tus costuras y pedidos
                     </p>
                 </div>
 
@@ -108,56 +100,39 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    {isRegistering && (
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-zinc-300 ml-1">Nombre</label>
-                            <div className="relative">
-                                <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
-                                <input
-                                    type="text"
-                                    required
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Tu Nombre"
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
-                                />
-                            </div>
-                        </div>
-                    )}
-
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-zinc-300 ml-1">Correo Electrónico</label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
+                        <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 ml-1">Correo Electrónico</label>
+                        <div className="relative group">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition-colors" size={18} />
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="tu@email.com"
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
+                                className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-zinc-800 focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 bg-black text-white placeholder-zinc-600 transition-all outline-none"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-zinc-300 ml-1">Contraseña</label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
+                        <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 ml-1">Contraseña</label>
+                        <div className="relative group">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition-colors" size={18} />
                             <input
                                 type={showPassword ? "text" : "password"}
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
+                                className="w-full pl-10 pr-12 py-3.5 rounded-xl border border-zinc-800 focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 bg-black text-white placeholder-zinc-600 transition-all outline-none font-mono"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-white transition-colors p-1"
                             >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
                     </div>
@@ -165,25 +140,26 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-bold transition-all shadow-lg shadow-black/40 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                        className="w-full bg-white hover:bg-zinc-200 text-black py-4 px-4 rounded-xl font-black transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-8 active:scale-95"
                     >
                         {loading ? (
-                            "Procesando..."
-                        ) : isRegistering ? (
-                            <> <UserPlus size={20} /> Registrarse </>
+                            <div className="flex items-center gap-2">
+                                <div className="animate-spin h-5 w-5 border-2 border-black/20 border-t-black rounded-full" />
+                                <span>Procesando...</span>
+                            </div>
                         ) : (
-                            <> <LogIn size={20} /> Iniciar Sesión </>
+                            <> <LogIn size={20} strokeWidth={3} /> Iniciar Sesión </>
                         )}
                     </button>
                 </form>
 
                 {/* Divisor */}
-                <div className="relative my-6">
+                <div className="relative my-8">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-zinc-700"></div>
+                        <div className="w-full border-t border-white/5"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-4 text-zinc-500 bg-zinc-950">o continúa con</span>
+                    <div className="relative flex justify-center text-xs uppercase tracking-tighter">
+                        <span className="px-4 text-zinc-600 bg-zinc-950 font-bold">o continúa con</span>
                     </div>
                 </div>
 
@@ -192,14 +168,11 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleGoogleLogin}
                     disabled={googleLoading || loading}
-                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group hover:border-zinc-600"
+                    className="w-full bg-black hover:bg-zinc-900 text-white border border-zinc-800 py-3.5 px-4 rounded-xl font-bold transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
                 >
                     {googleLoading ? (
                         <div className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                            <div className="animate-spin h-5 w-5 border-2 border-white/20 border-t-white rounded-full" />
                             <span>Conectando...</span>
                         </div>
                     ) : (
@@ -215,22 +188,6 @@ export default function LoginPage() {
                     )}
                 </button>
 
-                <div className="border-t border-zinc-800 pt-6 text-center">
-                    <p className="text-zinc-500 text-sm">
-                        {isRegistering ? "¿Ya tienes una cuenta?" : "¿No tienes cuenta aún?"}
-                    </p>
-                    <button
-                        onClick={() => {
-                            setIsRegistering(!isRegistering);
-                            setError("");
-                            setEmail("");
-                            setPassword("");
-                        }}
-                        className="text-blue-500 hover:text-blue-400 font-semibold text-sm mt-1 transition-colors"
-                    >
-                        {isRegistering ? "Inicia Sesión aquí" : "Regístrate gratis"}
-                    </button>
-                </div>
             </div>
         </div>
     );
