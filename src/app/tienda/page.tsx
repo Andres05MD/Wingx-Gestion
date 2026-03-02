@@ -96,7 +96,7 @@ export default function TiendaPage() {
                         <ShoppingBag className="w-10 h-10 text-red-400" />
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-3">Acceso Restringido</h2>
-                    <p className="text-slate-400 leading-relaxed">
+                    <p className="text-zinc-400 leading-relaxed">
                         No tienes permisos para acceder a la gestión de la tienda virtual.
                         Contacta al administrador si necesitas acceso.
                     </p>
@@ -106,20 +106,20 @@ export default function TiendaPage() {
     }
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-4 md:space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                            <ShoppingBag className="w-6 h-6 text-white" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2.5 md:gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/40">
+                            <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-black" />
                         </div>
                         Tienda Online
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1 ml-13">Gestión de productos visibles en la web</p>
+                    <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Gestión de productos visibles en la web</p>
                 </div>
                 <Link
                     href="/tienda/nuevo"
-                    className="group bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-105"
+                    className="group bg-zinc-900 border border-zinc-800 hover:from-purple-400 hover:to-pink-400 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Nuevo Producto</span>
@@ -127,13 +127,13 @@ export default function TiendaPage() {
             </div>
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-lg shadow-black/10">
+            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
                         type="text"
                         placeholder="Buscar por nombre o categoría..."
-                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all text-white placeholder-slate-500"
+                        className="w-full pl-12 pr-4 py-2.5 md:py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all text-white placeholder-zinc-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -141,18 +141,18 @@ export default function TiendaPage() {
             </div>
 
             {/* List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {loading ? (
-                    <div className="col-span-full p-12 text-center text-slate-400">
+                    <div className="col-span-full p-12 text-center text-zinc-400">
                         <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
                         Cargando productos...
                     </div>
                 ) : filteredProducts.length === 0 ? (
                     <div className="col-span-full p-12 text-center">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShoppingBag className="w-8 h-8 text-slate-600" />
+                            <ShoppingBag className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <p className="text-slate-400 font-medium text-lg">No hay productos en la tienda</p>
+                        <p className="text-zinc-400 font-medium text-lg">No hay productos en la tienda</p>
                     </div>
                 ) : (
                     filteredProducts.map((product) => (
@@ -165,7 +165,7 @@ export default function TiendaPage() {
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-slate-600">
+                                    <div className="w-full h-full flex items-center justify-center text-zinc-600">
                                         <Shirt size={48} opacity={0.5} />
                                     </div>
                                 )}
@@ -187,28 +187,28 @@ export default function TiendaPage() {
 
                             <div className="flex-grow">
                                 <div className="flex items-start justify-between gap-2 mb-2">
-                                    <h3 className="font-bold text-white text-lg leading-tight group-hover:text-purple-400 transition-colors">
+                                    <h3 className="font-bold text-white text-lg leading-tight group-hover:text-zinc-100 transition-colors">
                                         {product.name}
                                     </h3>
                                 </div>
 
-                                <p className="text-slate-400 text-sm mb-3 line-clamp-2 min-h-[2.5em]">
+                                <p className="text-zinc-400 text-sm mb-3 line-clamp-2 min-h-[2.5em]">
                                     {product.description}
                                 </p>
 
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     {product.categories && product.categories.length > 0 ? (
                                         product.categories.map((cat, idx) => (
-                                            <span key={idx} className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-slate-300">
+                                            <span key={idx} className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-zinc-300">
                                                 {cat}
                                             </span>
                                         ))
                                     ) : (
-                                        <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-slate-300">
+                                        <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-zinc-300">
                                             General
                                         </span>
                                     )}
-                                    <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-slate-300">
+                                    <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-zinc-300">
                                         {product.sizes?.join(', ') || 'N/A'}
                                     </span>
                                 </div>
@@ -216,7 +216,7 @@ export default function TiendaPage() {
                                 {/* Colores disponibles */}
                                 {product.colors && product.colors.length > 0 && (
                                     <div className="flex items-center gap-2 mb-3">
-                                        <Palette className="w-3 h-3 text-slate-500" />
+                                        <Palette className="w-3 h-3 text-zinc-500" />
                                         <div className="flex flex-wrap gap-1">
                                             {product.colors.slice(0, 6).map((color, idx) => {
                                                 const combinedColorMap = { ...COLOR_MAP, ...(product.customColorMap || {}) };
@@ -225,13 +225,13 @@ export default function TiendaPage() {
                                                     <div
                                                         key={idx}
                                                         title={color}
-                                                        className={`w-4 h-4 rounded-full ${isLight ? 'border border-slate-600' : ''}`}
+                                                        className={`w-4 h-4 rounded-full ${isLight ? 'border border-zinc-600' : ''}`}
                                                         style={{ backgroundColor: combinedColorMap[color] || '#888888' }}
                                                     />
                                                 );
                                             })}
                                             {product.colors.length > 6 && (
-                                                <span className="text-[10px] text-slate-500 ml-1">+{product.colors.length - 6}</span>
+                                                <span className="text-[10px] text-zinc-500 ml-1">+{product.colors.length - 6}</span>
                                             )}
                                         </div>
                                     </div>

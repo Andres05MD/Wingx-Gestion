@@ -200,79 +200,79 @@ export default function MaterialesPage() {
     const purchasedCount = materials.filter(m => m.purchased).length;
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-4 md:space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
-                            <ShoppingCart className="w-6 h-6 text-white" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2.5 md:gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/40">
+                            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-black" />
                         </div>
                         Lista de Materiales
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1 ml-13">Gestiona tus compras y suministros</p>
+                    <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Gestiona tus compras y suministros</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3">
                     {purchasedCount > 0 && (
                         <button
                             onClick={handleDeletePurchased}
-                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all"
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 px-3 py-2 md:px-4 md:py-2 rounded-xl font-medium flex items-center gap-2 transition-all text-sm"
                         >
-                            <Trash size={18} />
+                            <Trash size={16} />
                             <span className="hidden md:inline">Limpiar Listos</span>
                         </button>
                     )}
                     <button
                         onClick={() => setShowForm(!showForm)}
-                        className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:scale-105"
+                        className="group bg-zinc-900 border border-zinc-800 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
                     >
                         {showForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />}
-                        <span>{showForm ? 'Cancelar' : 'Agregar Material'}</span>
+                        <span>{showForm ? 'Cancelar' : 'Agregar'}</span>
                     </button>
                 </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-lg shadow-black/10">
+            <div className="grid grid-cols-3 gap-2.5 md:gap-6">
+                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-3 md:p-6 rounded-xl md:rounded-2xl border border-white/10 shadow-lg shadow-black/10">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                    <div className="relative z-10 flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 shadow-inner shadow-blue-500/10">
-                            <DollarSign size={28} />
+                    <div className="relative z-10 flex items-center gap-2.5 md:gap-4">
+                        <div className="p-2 md:p-3 bg-blue-500/10 text-blue-400 rounded-lg md:rounded-xl border border-blue-500/20 shadow-inner shadow-black/40">
+                            <DollarSign size={18} className="md:w-7 md:h-7" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Costo Estimado</p>
-                            <p className="text-2xl font-bold text-white">${totalCost.toFixed(2)}</p>
-                            <div className="mt-1">
-                                <BsBadge amount={totalCost} className="text-[10px] bg-blue-500/10 text-blue-300 border-blue-500/20" prefix="En Bs:" />
+                            <p className="text-[9px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-0.5 md:mb-1">Costo Est.</p>
+                            <p className="text-base md:text-2xl font-bold text-white">${totalCost.toFixed(2)}</p>
+                            <div className="mt-0.5 md:mt-1">
+                                <BsBadge amount={totalCost} className="text-[8px] md:text-[10px] bg-blue-500/10 text-blue-300 border-blue-500/20" prefix="Bs:" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-lg shadow-black/10">
+                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-3 md:p-6 rounded-xl md:rounded-2xl border border-white/10 shadow-lg shadow-black/10">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                    <div className="relative z-10 flex items-center gap-4">
-                        <div className="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20 shadow-inner shadow-amber-500/10">
-                            <Clock size={28} />
+                    <div className="relative z-10 flex items-center gap-2.5 md:gap-4">
+                        <div className="p-2 md:p-3 bg-amber-500/10 text-zinc-100 rounded-lg md:rounded-xl border border-amber-500/20 shadow-inner shadow-black/40">
+                            <Clock size={18} className="md:w-7 md:h-7" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pendientes</p>
-                            <p className="text-2xl font-bold text-white">{pendingCount}</p>
-                            <p className="text-xs text-slate-500 mt-1">Artículos por comprar</p>
+                            <p className="text-[9px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-0.5 md:mb-1">Pendientes</p>
+                            <p className="text-base md:text-2xl font-bold text-white">{pendingCount}</p>
+                            <p className="text-[9px] md:text-xs text-zinc-500 mt-0.5 md:mt-1 hidden md:block">Artículos por comprar</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-lg shadow-black/10">
+                <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md p-3 md:p-6 rounded-xl md:rounded-2xl border border-white/10 shadow-lg shadow-black/10">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                    <div className="relative z-10 flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20 shadow-inner shadow-emerald-500/10">
-                            <Check size={28} />
+                    <div className="relative z-10 flex items-center gap-2.5 md:gap-4">
+                        <div className="p-2 md:p-3 bg-emerald-500/10 text-zinc-100 rounded-lg md:rounded-xl border border-emerald-500/20 shadow-inner shadow-black/40">
+                            <Check size={18} className="md:w-7 md:h-7" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Comprados</p>
-                            <p className="text-2xl font-bold text-white">{purchasedCount}</p>
-                            <p className="text-xs text-slate-500 mt-1">Artículos listos</p>
+                            <p className="text-[9px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-0.5 md:mb-1">Comprados</p>
+                            <p className="text-base md:text-2xl font-bold text-white">{purchasedCount}</p>
+                            <p className="text-[9px] md:text-xs text-zinc-500 mt-0.5 md:mt-1 hidden md:block">Artículos listos</p>
                         </div>
                     </div>
                 </div>
@@ -280,14 +280,14 @@ export default function MaterialesPage() {
 
             {/* Form */}
             {showForm && (
-                <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl shadow-black/20 animate-in slide-in-from-top-4 fade-in duration-300">
+                <div className="md:bg-gradient-to-br md:from-white/5 md:to-transparent md:backdrop-blur-xl md:rounded-3xl md:border md:border-white/10 md:p-8 md:shadow-2xl md:shadow-black/20 mt-6 md:mt-0 animate-in slide-in-from-top-4 fade-in duration-300">
                     <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                            <Plus className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/40">
+                            <Plus className="w-5 h-5 text-black" />
                         </div>
                         <div className="flex-1">
                             <h2 className="text-xl font-bold text-white">Nuevo Material</h2>
-                            <p className="text-sm text-slate-400 mt-0.5">Agrega un material a tu lista de compras</p>
+                            <p className="text-sm text-zinc-400 mt-0.5">Agrega un material a tu lista de compras</p>
                         </div>
                     </div>
 
@@ -295,7 +295,7 @@ export default function MaterialesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Name */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     Nombre del Material
                                 </label>
                                 <input
@@ -305,13 +305,13 @@ export default function MaterialesPage() {
                                     placeholder="Ej. Tela de Seda, Botones, Cierre..."
                                     value={formData.name}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-slate-500 text-lg font-medium"
+                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-zinc-500 text-lg font-medium"
                                 />
                             </div>
 
                             {/* Quantity */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     Cantidad
                                 </label>
                                 <input
@@ -320,7 +320,7 @@ export default function MaterialesPage() {
                                     placeholder="Ej. 2 metros, 10 unidades..."
                                     value={formData.quantity}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-cyan-500/50 focus:bg-black/40 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all text-white placeholder-slate-500 text-lg"
+                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-cyan-500/50 focus:bg-black/40 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all text-white placeholder-zinc-500 text-lg"
                                 />
                             </div>
                         </div>
@@ -328,12 +328,12 @@ export default function MaterialesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Price */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <DollarSign className="w-4 h-4 text-zinc-100" />
                                     Precio Estimado
                                 </label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-lg">$</span>
                                     <input
                                         type="number"
                                         name="price"
@@ -353,7 +353,7 @@ export default function MaterialesPage() {
 
                             {/* Notes */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     Notas / Tienda
                                 </label>
                                 <input
@@ -362,24 +362,24 @@ export default function MaterialesPage() {
                                     placeholder="Ej. Comprar en Parisina, Color azul..."
                                     value={formData.notes}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all text-white placeholder-slate-500 text-lg"
+                                    className="w-full px-4 py-4 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all text-white placeholder-zinc-500 text-lg"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                        <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-3 md:gap-4 pt-6 md:pt-4 border-t border-white/10 md:border-none mt-6 md:mt-0">
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-semibold transition-all text-sm"
+                                className="px-6 py-4 md:py-3 rounded-xl md:bg-white/5 border border-white/5 md:border-white/10 hover:bg-white/10 md:hover:border-white/20 text-white font-semibold transition-all duration-300 text-center"
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="submit"
-                                className="group px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center gap-2 text-sm"
+                                className="group px-8 py-4 md:py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:from-blue-600 hover:to-cyan-600 text-white font-bold transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 flex items-center justify-center gap-2 text-sm"
                             >
-                                <Save className="w-4 h-4" />
+                                <Save className="w-5 h-5" />
                                 Guardar Material
                             </button>
                         </div>
@@ -388,13 +388,13 @@ export default function MaterialesPage() {
             )}
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-lg shadow-black/10">
+            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-xl md:rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
                         type="text"
                         placeholder="Buscar material..."
-                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-slate-500"
+                        className="w-full pl-12 pr-4 py-2.5 md:py-3 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-zinc-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -404,16 +404,16 @@ export default function MaterialesPage() {
             {/* List */}
             <div className="space-y-8">
                 {loading ? (
-                    <div className="p-12 text-center text-slate-400">
+                    <div className="p-12 text-center text-zinc-400">
                         <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
                         Cargando materiales...
                     </div>
                 ) : filteredMaterials.length === 0 ? (
                     <div className="p-12 text-center">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShoppingCart className="w-8 h-8 text-slate-600" />
+                            <ShoppingCart className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <p className="text-slate-400 font-medium text-lg">
+                        <p className="text-zinc-400 font-medium text-lg">
                             {searchTerm ? 'No se encontraron resultados.' : 'No hay materiales en la lista.'}
                         </p>
                     </div>
@@ -430,34 +430,34 @@ export default function MaterialesPage() {
                         }, {} as Record<string, Material[]>)
                     ).map(([source, groupMaterials]) => (
                         <div key={source} className="space-y-4 animate-in slide-in-from-bottom-2 fade-in duration-500">
-                            <h3 className="flex items-center gap-3 text-slate-300 font-bold text-sm uppercase tracking-wider pl-2">
+                            <h3 className="flex items-center gap-3 text-zinc-300 font-bold text-sm uppercase tracking-wider pl-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-blue-500/20"></span>
                                 {source}
                             </h3>
                             <div className="space-y-3">
                                 {groupMaterials.map((material) => (
-                                    <div key={material.id} className={`group relative flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 ${material.purchased ? 'bg-black/30 border-white/5 opacity-60' : 'bg-gradient-to-br from-white/[0.05] to-white/[0.01] border-white/10 backdrop-blur-md hover:border-white/20 hover:shadow-lg hover:shadow-black/10'}`}>
-                                        <div className="flex items-center gap-5">
+                                    <div key={material.id} className={`group relative flex items-center justify-between p-4 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-300 ${material.purchased ? 'bg-black/30 border-white/5 opacity-60' : 'bg-gradient-to-br from-white/[0.05] to-white/[0.01] border-white/10 backdrop-blur-md hover:border-white/20 hover:shadow-lg hover:shadow-black/10'}`}>
+                                        <div className="flex items-center gap-3 md:gap-5">
                                             <button
                                                 onClick={() => togglePurchased(material)}
-                                                className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${material.purchased ? 'bg-emerald-500 border-emerald-500 text-white scale-90' : 'border-slate-500 text-transparent hover:border-emerald-400 hover:text-emerald-500/50'}`}
+                                                className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${material.purchased ? 'bg-emerald-500 border-emerald-500 text-white scale-90' : 'border-zinc-500 text-transparent hover:border-emerald-400 hover:text-emerald-500/50'}`}
                                             >
                                                 <Check size={16} strokeWidth={3} />
                                             </button>
                                             <div>
-                                                <h3 className={`font-bold text-lg text-white mb-0.5 transition-all ${material.purchased ? 'line-through text-slate-500' : ''}`}>{material.name}</h3>
-                                                <div className="flex items-center gap-3 text-sm text-slate-400 font-medium">
+                                                <h3 className={`font-bold text-lg text-white mb-0.5 transition-all ${material.purchased ? 'line-through text-zinc-500' : ''}`}>{material.name}</h3>
+                                                <div className="flex items-center gap-3 text-sm text-zinc-400 font-medium">
                                                     {material.quantity && <span className="bg-white/5 px-2 py-0.5 rounded text-white">{material.quantity}</span>}
                                                     {(material.price ?? 0) > 0 && (
-                                                        <span className="flex items-center gap-2 text-emerald-400">
+                                                        <span className="flex items-center gap-2 text-zinc-100">
                                                             ${material.price!.toFixed(2)}
                                                             <BsBadge amount={material.price!} className="text-[10px] py-0 px-1.5" />
                                                         </span>
                                                     )}
                                                 </div>
                                                 {material.notes && (
-                                                    <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-500 italic">
-                                                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                                                    <div className="flex items-center gap-1.5 mt-2 text-xs text-zinc-500 italic">
+                                                        <span className="w-1 h-1 rounded-full bg-zinc-600"></span>
                                                         {material.notes}
                                                     </div>
                                                 )}
@@ -465,7 +465,7 @@ export default function MaterialesPage() {
                                         </div>
                                         <button
                                             onClick={() => material.id && handleDelete(material.id)}
-                                            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                                            className="w-11 h-11 flex items-center justify-center rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                             title="Eliminar"
                                         >
                                             <Trash size={18} />

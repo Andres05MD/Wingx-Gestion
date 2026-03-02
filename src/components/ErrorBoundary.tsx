@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-6">
+                <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-6">
                     <div className="max-w-md w-full">
                         {/* Error Card */}
                         <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-xl rounded-3xl border border-red-500/20 p-8 shadow-2xl">
@@ -59,13 +59,13 @@ export class ErrorBoundary extends Component<Props, State> {
                             </h2>
 
                             {/* Description */}
-                            <p className="text-slate-400 text-center mb-6">
+                            <p className="text-zinc-400 text-center mb-6">
                                 Ha ocurrido un error inesperado. No te preocupes, tus datos están seguros.
                             </p>
 
                             {/* Error Details (solo en desarrollo) */}
                             {process.env.NODE_ENV === 'development' && this.state.error && (
-                                <div className="mb-6 p-4 bg-slate-950/50 rounded-xl border border-red-500/20">
+                                <div className="mb-6 p-4 bg-black/50 rounded-xl border border-red-500/20">
                                     <p className="text-xs font-mono text-red-400 break-all">
                                         {this.state.error.message}
                                     </p>
@@ -76,7 +76,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={this.handleReset}
-                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-600/20"
+                                    className="w-full flex items-center justify-center gap-2 bg-zinc-900 border border-zinc-800 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-black/40"
                                 >
                                     <RefreshCw size={20} />
                                     Intentar de nuevo
@@ -93,7 +93,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         </div>
 
                         {/* Help Text */}
-                        <p className="text-center text-slate-500 text-sm mt-6">
+                        <p className="text-center text-zinc-500 text-sm mt-6">
                             Si el problema persiste, contacta al administrador
                         </p>
                     </div>

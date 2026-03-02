@@ -65,20 +65,20 @@ export default function InventarioPage() {
     }
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-4 md:space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                            <Package className="w-6 h-6 text-white" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2.5 md:gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/40">
+                            <Package className="w-5 h-5 md:w-6 md:h-6 text-black" />
                         </div>
                         Control de Inventario
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1 ml-13">Prendas listas para entrega inmediata</p>
+                    <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Prendas listas para entrega inmediata</p>
                 </div>
                 <Link
                     href="/inventario/nuevo"
-                    className="group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105"
+                    className="group bg-zinc-900 border border-zinc-800 hover:from-emerald-400 hover:to-teal-400 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Agregar Stock</span>
@@ -86,13 +86,13 @@ export default function InventarioPage() {
             </div>
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-lg shadow-black/10">
+            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
                         type="text"
                         placeholder="Buscar por nombre o color..."
-                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-emerald-500/50 focus:bg-black/40 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-white placeholder-slate-500"
+                        className="w-full pl-12 pr-4 py-2.5 md:py-3 rounded-xl bg-black/30 border border-white/10 focus:border-emerald-500/50 focus:bg-black/40 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-white placeholder-zinc-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -100,65 +100,74 @@ export default function InventarioPage() {
             </div>
 
             {/* List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                 {loading ? (
-                    <div className="col-span-full p-12 text-center text-slate-400">
+                    <div className="col-span-full p-12 text-center text-zinc-400">
                         <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto mb-4"></div>
                         Cargando inventario...
                     </div>
                 ) : filteredItems.length === 0 ? (
                     <div className="col-span-full p-12 text-center">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Package className="w-8 h-8 text-slate-600" />
+                            <Package className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <p className="text-slate-400 font-medium text-lg">No hay items en stock</p>
+                        <p className="text-zinc-400 font-medium text-lg">No hay items en stock</p>
                     </div>
                 ) : (
                     filteredItems.map((item) => (
-                        <div key={item.id} className="group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 p-5 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 text-emerald-300 flex items-center justify-center shadow-inner shadow-emerald-500/10">
-                                        <Shirt size={20} />
+                        <div key={item.id} className="group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-5 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
+                            {/* Card Header */}
+                            <div className="flex justify-between items-start mb-4 gap-3">
+                                <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                                    <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 text-emerald-300 flex items-center justify-center shadow-inner shadow-black/40">
+                                        <Shirt size={20} className="md:w-6 md:h-6" />
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-white text-lg group-hover:text-emerald-400 transition-colors">{item.garmentName || 'Sin Nombre'}</h3>
-                                        <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs font-mono text-slate-300 mt-1">
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-white text-base md:text-lg group-hover:text-zinc-100 transition-colors truncate">{item.garmentName || 'Sin Nombre'}</h3>
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] md:text-xs font-mono text-zinc-300 mt-1">
                                             Talla: <span className="font-bold ml-1 text-white">{item.size}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => item.id && handleDelete(item.id)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-red-400 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                                    className="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400/80 hover:text-red-400 transition-all border border-red-500/20 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                                    title="Eliminar del inventario"
                                 >
-                                    <Trash size={16} />
+                                    <Trash size={18} />
                                 </button>
                             </div>
 
+                            {/* Card Body */}
                             <div className="space-y-4">
                                 {item.color && (
-                                    <div className="flex items-center gap-3 text-sm text-slate-300 bg-black/20 p-2.5 rounded-lg border border-white/5">
-                                        <span className="w-4 h-4 rounded-full border border-white/20 shadow-sm" style={{ backgroundColor: item.color.toLowerCase() }}></span>
-                                        <span className="capitalize">{item.color}</span>
+                                    <div className="flex items-center justify-between bg-black/20 px-3 py-2.5 rounded-xl border border-white/5">
+                                        <span className="text-xs text-zinc-400 font-medium">Color:</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="capitalize text-sm text-zinc-200 font-semibold">{item.color}</span>
+                                            <span className="w-5 h-5 rounded-full border-2 border-white/10 shadow-sm" style={{ backgroundColor: item.color.toLowerCase() }}></span>
+                                        </div>
                                     </div>
                                 )}
 
+                                {/* Card Footer: Quantity Update */}
                                 <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cantidad Disponible</span>
-                                    <div className="flex items-center gap-1 bg-black/30 rounded-lg p-1 border border-white/10">
+                                    <span className="text-xs md:text-sm font-semibold text-zinc-500 uppercase tracking-wider">Cantidad Disponible</span>
+                                    <div className="flex items-center gap-1 bg-black/30 rounded-xl p-1 border border-white/10 shrink-0">
                                         <button
                                             onClick={() => item.id && handleQuantityUpdate(item.id, item.quantity, -1)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                                            className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors active:scale-95"
+                                            title="Disminuir"
                                         >
-                                            -
+                                            <span className="text-2xl leading-none mt-[-2px]">-</span>
                                         </button>
-                                        <span className="font-mono font-bold text-lg w-8 text-center text-white">{item.quantity}</span>
+                                        <span className="font-mono font-bold text-lg md:text-xl w-10 text-center text-white select-none">{item.quantity}</span>
                                         <button
                                             onClick={() => item.id && handleQuantityUpdate(item.id, item.quantity, 1)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                                            className="w-11 h-11 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/15 text-zinc-300 hover:text-white transition-colors active:scale-95 border border-white/5"
+                                            title="Aumentar"
                                         >
-                                            +
+                                            <span className="text-xl leading-none mt-[-2px]">+</span>
                                         </button>
                                     </div>
                                 </div>

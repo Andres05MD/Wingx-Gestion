@@ -331,16 +331,16 @@ export default function VerificacionPagosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 p-4 md:p-6">
+        <div className="min-h-screen bg-black p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-                            <Clock className="w-8 h-8 text-amber-400" />
+                            <Clock className="w-8 h-8 text-zinc-100" />
                             Verificación de Pagos
                         </h1>
-                        <p className="text-slate-400 mt-1">
+                        <p className="text-zinc-400 mt-1">
                             {orders.length} órden{orders.length !== 1 ? 'es' : ''} pendiente{orders.length !== 1 ? 's' : ''} de verificación
                         </p>
                     </div>
@@ -348,13 +348,13 @@ export default function VerificacionPagosPage() {
                     <div className="flex items-center gap-3">
                         {/* Búsqueda */}
                         <div className="relative flex-1 md:w-64">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                             <input
                                 type="text"
                                 placeholder="Buscar por referencia, ID..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-800/50 border border-zinc-700 text-white placeholder:text-zinc-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                             />
                         </div>
 
@@ -362,7 +362,7 @@ export default function VerificacionPagosPage() {
                         <button
                             onClick={handleRefresh}
                             disabled={refreshing}
-                            className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+                            className="p-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
                         >
                             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
                         </button>
@@ -373,7 +373,7 @@ export default function VerificacionPagosPage() {
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                        <span className="ml-3 text-slate-400">Cargando órdenes pendientes...</span>
+                        <span className="ml-3 text-zinc-400">Cargando órdenes pendientes...</span>
                     </div>
                 ) : error ? (
                     <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 text-center">
@@ -387,12 +387,12 @@ export default function VerificacionPagosPage() {
                         </button>
                     </div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-12 text-center">
-                        <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
+                    <div className="bg-zinc-800/30 border border-zinc-700/50 rounded-2xl p-12 text-center">
+                        <CheckCircle2 className="w-16 h-16 text-zinc-100 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-white mb-2">
                             {searchTerm ? 'Sin resultados' : '¡Todo al día!'}
                         </h2>
-                        <p className="text-slate-400">
+                        <p className="text-zinc-400">
                             {searchTerm
                                 ? 'No se encontraron órdenes con ese criterio de búsqueda.'
                                 : 'No hay pagos pendientes de verificación en este momento.'
@@ -404,7 +404,7 @@ export default function VerificacionPagosPage() {
                         {filteredOrders.map((order, index) => (
                             <div
                                 key={order.id}
-                                className="bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2"
+                                className="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 {/* Fila Principal */}
@@ -414,7 +414,7 @@ export default function VerificacionPagosPage() {
                                         <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {/* ID de Orden */}
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
+                                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
                                                     ID Orden
                                                 </p>
                                                 <p className="font-mono text-sm text-white font-bold">
@@ -424,28 +424,28 @@ export default function VerificacionPagosPage() {
 
                                             {/* Monto */}
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
+                                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
                                                     Monto
                                                 </p>
                                                 <p className="text-white font-bold flex items-center gap-1">
-                                                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                                                    <DollarSign className="w-4 h-4 text-zinc-100" />
                                                     {order.totalPrice?.toLocaleString('es-VE', { minimumFractionDigits: 2 })}
                                                 </p>
                                             </div>
 
                                             {/* Referencia */}
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
+                                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
                                                     Referencia
                                                 </p>
-                                                <p className="font-mono text-amber-400 font-bold">
+                                                <p className="font-mono text-zinc-100 font-bold">
                                                     {order.pagoMovil?.numeroReferencia || 'N/A'}
                                                 </p>
                                             </div>
 
                                             {/* Banco */}
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
+                                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
                                                     Banco Origen
                                                 </p>
                                                 <p className="text-white flex items-center gap-1">
@@ -460,7 +460,7 @@ export default function VerificacionPagosPage() {
                                             {/* Botón Expandir */}
                                             <button
                                                 onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                                                className="p-2 rounded-lg bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                                                className="p-2 rounded-lg bg-zinc-700/50 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
                                             >
                                                 {expandedId === order.id ? (
                                                     <ChevronUp className="w-5 h-5" />
@@ -473,7 +473,7 @@ export default function VerificacionPagosPage() {
                                             <button
                                                 onClick={() => handleApprove(order)}
                                                 disabled={processingId === order.id}
-                                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 
+                                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/20 text-zinc-100 
                                                          hover:bg-emerald-500/30 border border-emerald-500/30 font-semibold transition-all
                                                          disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
@@ -502,25 +502,25 @@ export default function VerificacionPagosPage() {
 
                                 {/* Panel Expandido */}
                                 {expandedId === order.id && (
-                                    <div className="p-4 md:p-5 pt-0 border-t border-slate-700/50 bg-slate-900/30 animate-in fade-in slide-in-from-top-2">
+                                    <div className="p-4 md:p-5 pt-0 border-t border-zinc-700/50 bg-zinc-950/30 animate-in fade-in slide-in-from-top-2">
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
                                             {/* Datos del Cliente */}
                                             <div className="space-y-3">
-                                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
                                                     Datos del Cliente
                                                 </h4>
                                                 <div className="space-y-2">
                                                     <p className="text-white flex items-center gap-2">
-                                                        <User className="w-4 h-4 text-slate-500" />
+                                                        <User className="w-4 h-4 text-zinc-500" />
                                                         {order.customer?.name || order.clientName || 'N/A'}
                                                     </p>
-                                                    <p className="text-slate-300 flex items-center gap-2">
-                                                        <Phone className="w-4 h-4 text-slate-500" />
+                                                    <p className="text-zinc-300 flex items-center gap-2">
+                                                        <Phone className="w-4 h-4 text-zinc-500" />
                                                         {order.customer?.phone || 'N/A'}
                                                     </p>
                                                     {order.customer?.email && (
-                                                        <p className="text-slate-300 flex items-center gap-2">
-                                                            <Mail className="w-4 h-4 text-slate-500" />
+                                                        <p className="text-zinc-300 flex items-center gap-2">
+                                                            <Mail className="w-4 h-4 text-zinc-500" />
                                                             {order.customer.email}
                                                         </p>
                                                     )}
@@ -529,20 +529,20 @@ export default function VerificacionPagosPage() {
 
                                             {/* Datos del Pago */}
                                             <div className="space-y-3">
-                                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
                                                     Datos del Pago Móvil
                                                 </h4>
                                                 <div className="space-y-2">
                                                     <p className="text-white flex items-center gap-2">
-                                                        <Phone className="w-4 h-4 text-slate-500" />
+                                                        <Phone className="w-4 h-4 text-zinc-500" />
                                                         Tel: {order.pagoMovil?.telefonoOrigen || 'N/A'}
                                                     </p>
-                                                    <p className="text-slate-300 flex items-center gap-2">
-                                                        <Hash className="w-4 h-4 text-slate-500" />
+                                                    <p className="text-zinc-300 flex items-center gap-2">
+                                                        <Hash className="w-4 h-4 text-zinc-500" />
                                                         Cédula: {order.pagoMovil?.cedulaTitular || 'N/A'}
                                                     </p>
-                                                    <p className="text-slate-300 flex items-center gap-2">
-                                                        <Calendar className="w-4 h-4 text-slate-500" />
+                                                    <p className="text-zinc-300 flex items-center gap-2">
+                                                        <Calendar className="w-4 h-4 text-zinc-500" />
                                                         Fecha Pago: {order.pagoMovil?.fechaPago || 'N/A'}
                                                     </p>
                                                 </div>
@@ -550,18 +550,18 @@ export default function VerificacionPagosPage() {
 
                                             {/* Detalles de la Orden */}
                                             <div className="space-y-3">
-                                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
                                                     Detalles de la Orden
                                                 </h4>
                                                 <div className="space-y-2 text-sm">
                                                     {order.items?.map((item, i) => (
-                                                        <p key={i} className="text-slate-300">
+                                                        <p key={i} className="text-zinc-300">
                                                             • {item.quantity}x {item.name}
                                                             {item.selectedSize && ` (Talla: ${item.selectedSize})`}
                                                             {item.selectedColor && ` - ${item.selectedColor}`}
                                                         </p>
                                                     ))}
-                                                    <p className="text-slate-500 text-xs mt-2">
+                                                    <p className="text-zinc-500 text-xs mt-2">
                                                         Creado: {formatDate(order.createdAt)}
                                                     </p>
                                                 </div>
@@ -570,9 +570,9 @@ export default function VerificacionPagosPage() {
 
                                         {/* Notas */}
                                         {order.notes && (
-                                            <div className="mt-4 p-3 bg-slate-800/50 rounded-lg">
-                                                <p className="text-xs text-slate-500 mb-1">Notas del cliente:</p>
-                                                <p className="text-slate-300 text-sm">{order.notes}</p>
+                                            <div className="mt-4 p-3 bg-zinc-800/50 rounded-lg">
+                                                <p className="text-xs text-zinc-500 mb-1">Notas del cliente:</p>
+                                                <p className="text-zinc-300 text-sm">{order.notes}</p>
                                             </div>
                                         )}
                                     </div>

@@ -1,5 +1,5 @@
 import { db, auth } from "@/lib/firebase";
-import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, setDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, setDoc, writeBatch, runTransaction, increment, getAggregateFromServer, sum, count, limit, orderBy } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { firestoreOperation, validateRequiredFields } from "@/lib/retry";
 
@@ -201,10 +201,22 @@ export const getGarmentById = async (id: string): Promise<Garment | null> => {
 export const deleteGarmentFromStorage = async (id: string) => {
     if (!id) throw new Error("Garment ID is required");
 
-    return firestoreOperation(
-        () => deleteDoc(doc(db, "garments", id)),
-        'deleteGarment'
-    );
+    return firestoreOperation(async () => {
+        const batch = writeBatch(db);
+
+        // 1. Buscar y marcar para eliminar todo el stock asociado a esta prenda
+        const stockQuery = query(collection(db, "stock"), where("garmentId", "==", id));
+        const stockSnapshot = await getDocs(stockQuery);
+        stockSnapshot.docs.forEach(stockDoc => {
+            batch.delete(doc(db, "stock", stockDoc.id));
+        });
+
+        // 2. Marcar la prenda para eliminar
+        batch.delete(doc(db, "garments", id));
+
+        // 3. Ejecutar todo en una sola operación atómica
+        await batch.commit();
+    }, 'deleteGarment');
 };
 
 
@@ -239,7 +251,32 @@ export const getClients = async (role?: string, userId?: string): Promise<Client
 };
 
 export const deleteClient = async (id: string) => {
-    return deleteDoc(doc(db, "clients", id));
+    if (!id) throw new Error("Client ID is required");
+
+    return firestoreOperation(async () => {
+        // 1. Obtener el nombre del cliente para buscar pedidos vinculados
+        const clientDoc = await getDoc(doc(db, "clients", id));
+        if (!clientDoc.exists()) throw new Error("Cliente no encontrado");
+        const clientName = clientDoc.data().name;
+
+        // 2. Verificar si hay pedidos activos (no finalizados/entregados)
+        const activeOrdersQuery = query(
+            collection(db, "orders"),
+            where("clientName", "==", clientName)
+        );
+        const activeOrders = await getDocs(activeOrdersQuery);
+        const hasActiveOrders = activeOrders.docs.some(d => {
+            const status = d.data().status;
+            return status !== 'Finalizado' && status !== 'Entregado';
+        });
+
+        if (hasActiveOrders) {
+            throw new Error(`No se puede eliminar a "${clientName}" porque tiene pedidos activos. Finalízalos primero.`);
+        }
+
+        // 3. Eliminar el cliente
+        await deleteDoc(doc(db, "clients", id));
+    }, 'deleteClient');
 };
 
 
@@ -361,15 +398,26 @@ export const updateStockByGarmentId = async (garmentId: string, quantityChange: 
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-        // Update first matching item
-        const stockDoc = querySnapshot.docs[0];
-        const currentQty = stockDoc.data().quantity || 0;
-        const newQty = currentQty + quantityChange;
+        const stockDocRef = doc(db, "stock", querySnapshot.docs[0].id);
 
-        // Prevent negative stock if desired, or allow it
-        if (newQty >= 0) {
-            await updateDoc(doc(db, "stock", stockDoc.id), { quantity: newQty });
+        // ✅ Transacción atómica: previene race conditions
+        try {
+            await runTransaction(db, async (transaction) => {
+                const stockSnap = await transaction.get(stockDocRef);
+                if (!stockSnap.exists()) throw new Error("Stock no encontrado");
+
+                const currentQty = stockSnap.data().quantity || 0;
+                const newQty = currentQty + quantityChange;
+
+                if (newQty < 0) {
+                    throw new Error("Stock insuficiente");
+                }
+
+                transaction.update(stockDocRef, { quantity: increment(quantityChange) });
+            });
             return true;
+        } catch {
+            return false;
         }
     }
     return false;
@@ -413,4 +461,129 @@ export const getEvents = async (role?: string, userId?: string): Promise<Calenda
 
 export const deleteEvent = async (id: string) => {
     return deleteDoc(doc(db, "events", id));
+};
+
+// Batch Save Materials (lista de compras)
+export const batchSaveMaterials = async (materials: Omit<Material, 'id' | 'ownerId' | 'createdAt'>[], sourceName: string) => {
+    const userId = getUserId();
+    if (!userId) throw new Error("User not authenticated");
+    if (!materials || materials.length === 0) return;
+
+    const batch = writeBatch(db);
+    const now = new Date().toISOString();
+
+    for (const mat of materials) {
+        const newDocRef = doc(collection(db, "materials"));
+        batch.set(newDocRef, {
+            name: mat.name,
+            quantity: mat.quantity ?? 1,
+            price: mat.price ?? 0,
+            source: sourceName,
+            purchased: false,
+            ownerId: userId,
+            createdAt: now,
+        });
+    }
+
+    await batch.commit();
+};
+
+// ==========================================
+// Aggregation Queries (Estadísticas del Dashboard)
+// ==========================================
+
+export interface DashboardStats {
+    totalIncome: number;       // Suma de paidAmount
+    totalPending: number;      // Suma de (price - paidAmount) donde balance > 0
+    activeOrdersCount: number; // Cantidad de pedidos no finalizados/entregados
+    totalOrdersCount: number;  // Total de pedidos
+}
+
+export const getDashboardStats = async (role?: string, userId?: string): Promise<DashboardStats> => {
+    const uid = userId || getUserId();
+    if (!uid) return { totalIncome: 0, totalPending: 0, activeOrdersCount: 0, totalOrdersCount: 0 };
+
+    const effectiveRole = role || await getCurrentUserRole();
+
+    // Base query según rol
+    const baseQuery = effectiveRole === 'admin'
+        ? collection(db, "orders")
+        : query(collection(db, "orders"), where("ownerId", "==", uid));
+
+    try {
+        // Agregación: suma de precios y pagos
+        const aggSnapshot = await getAggregateFromServer(baseQuery, {
+            totalPrice: sum('price'),
+            totalPaid: sum('paidAmount'),
+            totalCount: count(),
+        });
+
+        const totalPrice = aggSnapshot.data().totalPrice || 0;
+        const totalPaid = aggSnapshot.data().totalPaid || 0;
+        const totalCount = aggSnapshot.data().totalCount || 0;
+
+        // Contar pedidos activos (no finalizados/entregados) - necesita query separada
+        const activeQuery = effectiveRole === 'admin'
+            ? query(collection(db, "orders"), where("status", "not-in", ["Finalizado", "Entregado"]))
+            : query(collection(db, "orders"), where("ownerId", "==", uid), where("status", "not-in", ["Finalizado", "Entregado"]));
+
+        const activeAgg = await getAggregateFromServer(activeQuery, {
+            activeCount: count(),
+        });
+
+        return {
+            totalIncome: totalPaid,
+            totalPending: Math.max(0, totalPrice - totalPaid),
+            activeOrdersCount: activeAgg.data().activeCount || 0,
+            totalOrdersCount: totalCount,
+        };
+    } catch (error) {
+        console.error("Error getting dashboard stats:", error);
+        // Fallback: retornar ceros, el dashboard mostrará "0"
+        return { totalIncome: 0, totalPending: 0, activeOrdersCount: 0, totalOrdersCount: 0 };
+    }
+};
+
+export interface AdminStats {
+    totalUsers: number;
+    totalOrders: number;
+    totalRevenue: number;
+}
+
+export const getAdminStats = async (): Promise<AdminStats> => {
+    try {
+        const [usersAgg, ordersAgg] = await Promise.all([
+            getAggregateFromServer(collection(db, "users"), {
+                userCount: count(),
+            }),
+            getAggregateFromServer(collection(db, "orders"), {
+                orderCount: count(),
+                totalRevenue: sum('price'),
+            }),
+        ]);
+
+        return {
+            totalUsers: usersAgg.data().userCount || 0,
+            totalOrders: ordersAgg.data().orderCount || 0,
+            totalRevenue: ordersAgg.data().totalRevenue || 0,
+        };
+    } catch (error) {
+        console.error("Error getting admin stats:", error);
+        return { totalUsers: 0, totalOrders: 0, totalRevenue: 0 };
+    }
+};
+
+// Obtener pedidos recientes con límite (evita descargar toda la colección)
+export const getRecentOrders = async (role?: string, userId?: string, maxResults: number = 10): Promise<Order[]> => {
+    const uid = userId || getUserId();
+    if (!uid) return [];
+
+    const effectiveRole = role || await getCurrentUserRole();
+
+    const q = effectiveRole === 'admin'
+        ? query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(maxResults))
+        : query(collection(db, "orders"), where("ownerId", "==", uid), orderBy("createdAt", "desc"), limit(maxResults));
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }) as Order);
 };

@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-slate-950 text-white`}>
+      <body className={`${inter.className} bg-black text-white`}>
         <AuthProvider>
           <ExchangeRateProvider>
             <OrdersProvider>

@@ -84,8 +84,8 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-            <div className="bg-slate-900 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-800 space-y-8 animate-in fade-in zoom-in-95 duration-300">
+        <div className="min-h-screen bg-black flex items-center justify-center p-4">
+            <div className="bg-zinc-950 p-8 rounded-2xl shadow-xl w-full max-w-md border border-zinc-800 space-y-8 animate-in fade-in zoom-in-95 duration-300">
                 <div className="text-center">
                     <div className="flex justify-center mb-4">
                         <div className="bg-blue-600/20 p-4 rounded-2xl">
@@ -95,7 +95,7 @@ export default function LoginPage() {
                     <h1 className="text-3xl font-bold text-white mb-2">
                         {isRegistering ? "Crear Cuenta" : "Bienvenido a Wingx"}
                     </h1>
-                    <p className="text-slate-400">
+                    <p className="text-zinc-400">
                         {isRegistering ? "Empieza a gestionar tu taller hoy" : "Gestiona tus costuras y pedidos"}
                     </p>
                 </div>
@@ -110,52 +110,52 @@ export default function LoginPage() {
 
                     {isRegistering && (
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-300 ml-1">Nombre</label>
+                            <label className="text-sm font-semibold text-zinc-300 ml-1">Nombre</label>
                             <div className="relative">
-                                <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                                <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                 <input
                                     type="text"
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Tu Nombre"
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-950 text-white placeholder-slate-500 transition-all"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
                                 />
                             </div>
                         </div>
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-300 ml-1">Correo Electrónico</label>
+                        <label className="text-sm font-semibold text-zinc-300 ml-1">Correo Electrónico</label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="tu@email.com"
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-950 text-white placeholder-slate-500 transition-all"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-300 ml-1">Contraseña</label>
+                        <label className="text-sm font-semibold text-zinc-300 ml-1">Contraseña</label>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                             <input
                                 type={showPassword ? "text" : "password"}
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-950 text-white placeholder-slate-500 transition-all"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black text-white placeholder-zinc-500 transition-all"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -165,7 +165,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-bold transition-all shadow-lg shadow-black/40 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                         {loading ? (
                             "Procesando..."
@@ -180,10 +180,10 @@ export default function LoginPage() {
                 {/* Divisor */}
                 <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-slate-700"></div>
+                        <div className="w-full border-t border-zinc-700"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-4 text-slate-500 bg-slate-900">o continúa con</span>
+                        <span className="px-4 text-zinc-500 bg-zinc-950">o continúa con</span>
                     </div>
                 </div>
 
@@ -192,11 +192,11 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleGoogleLogin}
                     disabled={googleLoading || loading}
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group hover:border-slate-600"
+                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group hover:border-zinc-600"
                 >
                     {googleLoading ? (
                         <div className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-5 w-5 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -215,8 +215,8 @@ export default function LoginPage() {
                     )}
                 </button>
 
-                <div className="border-t border-slate-800 pt-6 text-center">
-                    <p className="text-slate-500 text-sm">
+                <div className="border-t border-zinc-800 pt-6 text-center">
+                    <p className="text-zinc-500 text-sm">
                         {isRegistering ? "¿Ya tienes una cuenta?" : "¿No tienes cuenta aún?"}
                     </p>
                     <button

@@ -12,7 +12,7 @@ export default function BsBadge({ amount, className = "", prefix = "" }: BsBadge
     if (amount <= 0 || isNaN(amount)) return null;
 
     // determine default colors if not provided in className
-    const defaultStyles = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+    const defaultStyles = "bg-emerald-500/10 text-zinc-100 border border-emerald-500/20";
     const finalClass = className.includes("bg-") ? className : `${defaultStyles} ${className}`;
 
     // formatBs typically returns the currency symbol, so we don't force "Bs" here unless needed.

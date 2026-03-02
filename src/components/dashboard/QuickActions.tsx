@@ -11,10 +11,10 @@ import {
 export default function QuickActions() {
     return (
         <section>
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2 tracking-tight">
+            <h2 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-6 flex items-center gap-2 tracking-tight">
                 Acciones Rápidas
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2.5 md:gap-4">
                 <ActionCard
                     href="/pedidos"
                     icon={ClipboardPlus}
@@ -27,7 +27,7 @@ export default function QuickActions() {
                     href="/materiales"
                     icon={ShoppingCart}
                     label="Materiales"
-                    colorClass="text-emerald-400 group-hover:text-emerald-300"
+                    colorClass="text-zinc-100 group-hover:text-emerald-300"
                     bgClass="from-emerald-500/10 to-emerald-500/5 group-hover:from-emerald-500/20 group-hover:to-emerald-500/10"
                     borderClass="group-hover:border-emerald-500/30"
                 />
@@ -35,7 +35,7 @@ export default function QuickActions() {
                     href="/prendas"
                     icon={Shirt}
                     label="Nueva Prenda"
-                    colorClass="text-purple-400 group-hover:text-purple-300"
+                    colorClass="text-zinc-100 group-hover:text-purple-300"
                     bgClass="from-purple-500/10 to-purple-500/5 group-hover:from-purple-500/20 group-hover:to-purple-500/10"
                     borderClass="group-hover:border-purple-500/30"
                 />
@@ -43,7 +43,7 @@ export default function QuickActions() {
                     href="/agenda"
                     icon={Calendar}
                     label="Ver Agenda"
-                    colorClass="text-pink-400 group-hover:text-pink-300"
+                    colorClass="text-zinc-100 group-hover:text-pink-300"
                     bgClass="from-pink-500/10 to-pink-500/5 group-hover:from-pink-500/20 group-hover:to-pink-500/10"
                     borderClass="group-hover:border-pink-500/30"
                 />
@@ -51,7 +51,7 @@ export default function QuickActions() {
                     href="/clientes"
                     icon={Users}
                     label="Ver Clientes"
-                    colorClass="text-cyan-400 group-hover:text-cyan-300"
+                    colorClass="text-zinc-100 group-hover:text-cyan-300"
                     bgClass="from-cyan-500/10 to-cyan-500/5 group-hover:from-cyan-500/20 group-hover:to-cyan-500/10"
                     borderClass="group-hover:border-cyan-500/30"
                 />
@@ -70,15 +70,15 @@ export default function QuickActions() {
 
 function ActionCard({ href, icon: Icon, label, colorClass, bgClass, borderClass }: any) {
     return (
-        <Link href={href} className={`group relative p-4 rounded-3xl border border-white/10 transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${bgClass} ${borderClass} overflow-hidden backdrop-blur-md hover:shadow-lg hover:shadow-black/20`}>
+        <Link href={href} className={`group relative p-3 md:p-4 rounded-2xl md:rounded-3xl border border-white/10 transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${bgClass} ${borderClass} overflow-hidden backdrop-blur-md hover:shadow-lg hover:shadow-black/20`}>
             {/* Glossy overlay */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-            <div className="flex flex-col items-center justify-center gap-4 text-center relative z-10">
-                <div className={`p-4 rounded-2xl bg-black/20 border border-white/10 shadow-lg ${colorClass} group-hover:scale-110 transition-transform duration-300 group-hover:bg-black/30`}>
-                    <Icon size={28} />
+            <div className="flex flex-col items-center justify-center gap-2 md:gap-4 text-center relative z-10">
+                <div className={`p-2.5 md:p-4 rounded-xl md:rounded-2xl bg-black/20 border border-white/10 shadow-lg ${colorClass} group-hover:scale-110 transition-transform duration-300 group-hover:bg-black/30`}>
+                    <Icon size={22} className="md:w-7 md:h-7" />
                 </div>
-                <span className="font-semibold text-slate-200 text-sm tracking-wide group-hover:text-white transition-colors">{label}</span>
+                <span className="font-semibold text-zinc-200 text-[11px] md:text-sm tracking-wide group-hover:text-white transition-colors leading-tight">{label}</span>
             </div>
         </Link>
     )

@@ -56,10 +56,10 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         const result = await Swal.fire({
             title: '🔔 Activar Notificaciones',
             html: `
-                <p class="text-sm text-slate-300 mb-2">
+                <p class="text-sm text-zinc-300 mb-2">
                     Recibe alertas instantáneas cuando llegue un nuevo pedido desde la tienda.
                 </p>
-                <p class="text-xs text-slate-400">
+                <p class="text-xs text-zinc-400">
                     Esto te permitirá atender pedidos más rápido.
                 </p>
             `,

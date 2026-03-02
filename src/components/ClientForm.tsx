@@ -84,26 +84,26 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-            <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl shadow-purple-500/10 animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh] overflow-hidden">
+            <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl shadow-black/40 animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh] overflow-hidden">
                 {/* Header */}
                 <div className="relative p-6 border-b border-white/10 bg-gradient-to-r from-purple-500/10 via-transparent to-blue-500/10">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
                                 <Sparkles className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h2 className="text-2xl font-black text-white">
                                     {initialData ? "Editar Cliente" : "Nuevo Cliente"}
                                 </h2>
-                                <p className="text-sm text-slate-400 mt-0.5">
+                                <p className="text-sm text-zinc-400 mt-0.5">
                                     {initialData ? "Actualiza la información del cliente" : "Registra un nuevo cliente"}
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="w-10 h-10 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-all flex items-center justify-center"
+                            className="w-10 h-10 rounded-xl hover:bg-white/10 text-zinc-400 hover:text-white transition-all flex items-center justify-center"
                         >
                             <X size={20} />
                         </button>
@@ -113,7 +113,7 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                 {/* Form Content */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                     {/* Basic Info Card */}
-                    <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-lg">
+                    <div className="md:bg-gradient-to-br md:from-white/5 md:to-transparent md:backdrop-blur-xl md:rounded-2xl md:border md:border-white/10 md:p-6 md:shadow-lg">
                         <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/10">
                             <User className="w-5 h-5 text-blue-400" />
                             <h3 className="text-lg font-bold text-white">Información Básica</h3>
@@ -122,7 +122,7 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                         <div className="space-y-4">
                             {/* Name */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-slate-300 uppercase tracking-wider">
+                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
                                     <span className="text-red-400">*</span>
                                     Nombre Completo
                                 </label>
@@ -133,13 +133,13 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                     placeholder="Ej. Ana María Pérez"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-blue-500/50 focus:bg-black/30 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-slate-500 text-base"
+                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-blue-500/50 focus:bg-black/30 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-zinc-500 text-base"
                                 />
                             </div>
 
                             {/* Phone */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-slate-300 uppercase tracking-wider">
+                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
                                     <Phone className="w-4 h-4 text-green-400" />
                                     Teléfono / WhatsApp
                                 </label>
@@ -149,14 +149,14 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                     placeholder="Ej. +58 412-1234567"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-green-500/50 focus:bg-black/30 focus:ring-4 focus:ring-green-500/10 outline-none transition-all text-white placeholder-slate-500 text-base"
+                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-green-500/50 focus:bg-black/30 focus:ring-4 focus:ring-green-500/10 outline-none transition-all text-white placeholder-zinc-500 text-base"
                                 />
                             </div>
 
                             {/* Notes */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-slate-300 uppercase tracking-wider">
-                                    <FileText className="w-4 h-4 text-amber-400" />
+                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
+                                    <FileText className="w-4 h-4 text-zinc-100" />
                                     Notas Adicionales
                                 </label>
                                 <textarea
@@ -165,39 +165,39 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                     placeholder="Preferencias, tallas habituales, detalles importantes..."
                                     value={formData.notes}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-amber-500/50 focus:bg-black/30 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all resize-none text-white placeholder-slate-500"
+                                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-amber-500/50 focus:bg-black/30 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all resize-none text-white placeholder-zinc-500"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Measurements Card */}
-                    <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden shadow-lg">
+                    <div className="md:bg-gradient-to-br md:from-white/5 md:to-transparent md:backdrop-blur-xl md:rounded-2xl md:border md:border-white/10 overflow-hidden md:shadow-lg mt-6 md:mt-0">
                         <button
                             type="button"
                             onClick={() => setShowMeasurements(!showMeasurements)}
-                            className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors group"
+                            className="w-full flex items-center justify-between py-4 md:p-6 border-t border-white/10 md:border-none hover:bg-white/5 transition-colors group"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Ruler className="w-5 h-5 text-white" />
                                 </div>
                                 <div className="text-left">
                                     <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
                                         Medidas Corporales
                                     </h3>
-                                    <p className="text-xs text-slate-500 mt-0.5">Opcional - Medidas para personalización</p>
+                                    <p className="text-xs text-zinc-500 mt-0.5">Opcional - Medidas para personalización</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className={`text-xs font-bold uppercase px-3 py-1 rounded-full transition-all ${showMeasurements
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'bg-white/5 text-slate-500'
+                                    : 'bg-white/5 text-zinc-500'
                                     }`}>
                                     {showMeasurements ? "Ocultar" : "Mostrar"}
                                 </span>
                                 <svg
-                                    className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${showMeasurements ? 'rotate-180' : ''}`}
+                                    className={`w-5 h-5 text-zinc-400 transition-transform duration-300 ${showMeasurements ? 'rotate-180' : ''}`}
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -220,7 +220,7 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                             { key: 'pantsLength', label: 'Largo Pantalón', icon: '👖' },
                                         ].map((field) => (
                                             <div key={field.key} className="space-y-1.5">
-                                                <label className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                                <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 uppercase tracking-wide">
                                                     <span className="text-sm">{field.icon}</span>
                                                     {field.label}
                                                 </label>
@@ -232,17 +232,17 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                                         // @ts-ignore
                                                         value={formData.measurements?.[field.key] || ''}
                                                         onChange={handleMeasurementChange}
-                                                        className="w-full px-3 py-2.5 pr-10 rounded-lg bg-slate-900/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-slate-600 font-mono"
+                                                        className="w-full px-3 py-2.5 pr-10 rounded-lg bg-zinc-950/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-zinc-600 font-mono"
                                                         placeholder="0.0"
                                                     />
-                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium">cm</span>
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-medium">cm</span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
 
                                     <div className="mt-4 pt-4 border-t border-white/5">
-                                        <label className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
+                                        <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 uppercase tracking-wide mb-2">
                                             <span className="text-sm">📝</span>
                                             Observaciones Adicionales
                                         </label>
@@ -253,7 +253,7 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                                             // @ts-ignore
                                             value={formData.measurements?.custom || ''}
                                             onChange={handleMeasurementChange}
-                                            className="w-full px-3 py-2.5 rounded-lg bg-slate-900/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-slate-600 resize-none"
+                                            className="w-full px-3 py-2.5 rounded-lg bg-zinc-950/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-zinc-600 resize-none"
                                         />
                                     </div>
                                 </div>
@@ -262,20 +262,20 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center justify-between gap-3 pt-4">
+                    <div className="flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-6 md:pt-4 border-t border-white/10 md:border-none mt-6 md:mt-0">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-semibold transition-all text-sm"
+                            className="px-6 py-4 md:py-3 rounded-xl md:bg-white/5 border border-white/5 md:border-white/10 md:hover:bg-white/10 hover:border-white/20 text-white font-semibold transition-all duration-300 text-center text-sm"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 disabled:shadow-none flex items-center gap-2 text-sm"
+                            className="group px-8 py-4 md:py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:from-purple-600 hover:to-blue-600 disabled:from-zinc-600 disabled:to-zinc-600 text-white font-bold transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 disabled:shadow-none flex items-center justify-center gap-2 text-sm"
                         >
-                            <Sparkles className="w-4 h-4" />
+                            <Sparkles className="w-5 h-5 md:w-4 md:h-4" />
                             {loading ? "Guardando..." : initialData ? "Actualizar Cliente" : "Guardar Cliente"}
                         </button>
                     </div>

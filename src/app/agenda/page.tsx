@@ -137,7 +137,7 @@ export default function AgendaPage() {
     const calendarDays = [];
     // Empty cells
     for (let i = 0; i < firstDay; i++) {
-        calendarDays.push(<div key={`empty-${i}`} className="min-h-[6rem] md:min-h-[8rem] bg-black/20 border-r border-b border-white/5 last:border-r-0"></div>);
+        calendarDays.push(<div key={`empty-${i}`} className="min-h-[5rem] md:min-h-[8rem] bg-black/20 border-r border-b border-white/5 last:border-r-0"></div>);
     }
     // Days
     for (let day = 1; day <= daysInMonth; day++) {
@@ -149,13 +149,13 @@ export default function AgendaPage() {
             <div
                 key={day}
                 onClick={() => handleDayClick(day)}
-                className={`min-h-[6rem] md:min-h-[8rem] p-2 relative group transition-all cursor-pointer border-b border-r border-white/5 last:border-r-0 hover:bg-white/[0.03] flex flex-col`}
+                className={`min-h-[5rem] md:min-h-[8rem] p-1.5 md:p-2 relative group transition-all cursor-pointer border-b border-r border-white/5 last:border-r-0 hover:bg-white/[0.03] flex flex-col`}
             >
                 <div className="flex justify-between items-start mb-1">
-                    <span className={`text-sm font-bold w-7 h-7 flex items-center justify-center rounded-lg transition-all ${isToday ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30 font-bold scale-110' : 'text-slate-400 group-hover:text-slate-200'}`}>
+                    <span className={`text-sm font-bold w-7 h-7 flex items-center justify-center rounded-lg transition-all ${isToday ? 'bg-zinc-900 border border-zinc-800 text-white shadow-lg shadow-black/40 font-bold scale-110' : 'text-zinc-400 group-hover:text-zinc-200'}`}>
                         {day}
                     </span>
-                    <button className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-slate-500 hover:text-pink-400 transition-all p-1 hover:bg-white/5 rounded-md">
+                    <button className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-zinc-500 hover:text-zinc-100 transition-all p-1 hover:bg-white/5 rounded-md">
                         <Plus size={14} />
                     </button>
                 </div>
@@ -166,8 +166,8 @@ export default function AgendaPage() {
                             key={event.id}
                             onClick={(e) => handleEventClick(event, e)}
                             className={`text-[10px] md:text-xs p-1.5 rounded-lg border backdrop-blur-sm truncate flex justify-between items-center group/event transition-all hover:scale-[1.02] hover:shadow-lg shadow-black/10 cursor-pointer
-                                ${event.type === 'delivery' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:border-emerald-500/40' :
-                                    event.type === 'meeting' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:border-blue-500/40' : 'bg-slate-700/30 border-slate-600/30 text-slate-400 hover:border-slate-500/50'}
+                                ${event.type === 'delivery' ? 'bg-emerald-500/10 border-emerald-500/20 text-zinc-100 hover:border-emerald-500/40' :
+                                    event.type === 'meeting' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:border-blue-500/40' : 'bg-zinc-700/30 border-zinc-600/30 text-zinc-400 hover:border-zinc-500/50'}
                             `}
                         >
                             <span className="truncate font-medium">{event.title}</span>
@@ -179,30 +179,30 @@ export default function AgendaPage() {
     }
 
     return (
-        <div className="space-y-4 md:space-y-6 flex flex-col h-[calc(100dvh-180px)] md:h-[calc(100vh-100px)] bg-slate-950 md:pb-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 shrink-0">
-                <div className="flex items-center justify-between md:justify-start gap-4">
+        <div className="space-y-3 md:space-y-6 flex flex-col h-[calc(100dvh-140px)] md:h-[calc(100vh-100px)] bg-black md:pb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6 shrink-0">
+                <div className="flex items-center justify-between md:justify-start gap-3 md:gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
-                                <CalendarIcon className="w-6 h-6 text-white" />
+                        <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2.5 md:gap-3">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/40">
+                                <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-black" />
                             </div>
                             Agenda
                         </h1>
-                        <p className="text-slate-400 text-sm mt-1 ml-13">Organiza entregas y eventos</p>
+                        <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Organiza entregas y eventos</p>
                     </div>
 
                     {/* View Toggle - Mobile: Visible, Desktop: Visible */}
                     <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 md:ml-6">
                         <button
                             onClick={() => setView('calendar')}
-                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white/10 text-white shadow-sm' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
                         >
                             <LayoutGrid size={18} />
                         </button>
                         <button
                             onClick={() => setView('list')}
-                            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white/10 text-white shadow-sm' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
                         >
                             <List size={18} />
                         </button>
@@ -210,9 +210,9 @@ export default function AgendaPage() {
                 </div>
 
                 <div className="flex items-center gap-4 bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg shadow-black/10 self-center md:self-auto">
-                    <button onClick={handlePrevMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95"><ChevronLeft size={20} /></button>
+                    <button onClick={handlePrevMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-zinc-400 hover:text-white transition-all active:scale-95"><ChevronLeft size={20} /></button>
                     <span className="font-bold text-lg text-white w-40 text-center select-none tracking-wide">{MONTH_NAMES[month]} {year}</span>
-                    <button onClick={handleNextMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95"><ChevronRight size={20} /></button>
+                    <button onClick={handleNextMonth} className="p-2.5 hover:bg-white/10 rounded-xl text-zinc-400 hover:text-white transition-all active:scale-95"><ChevronRight size={20} /></button>
                 </div>
             </div>
 
@@ -221,7 +221,7 @@ export default function AgendaPage() {
                     <>
                         <div className="grid grid-cols-7 border-b border-white/10 bg-white/[0.02]">
                             {DAYS_OF_WEEK.map(day => (
-                                <div key={day} className="py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                <div key={day} className="py-4 text-center text-xs font-bold text-zinc-500 uppercase tracking-widest">
                                     {day}
                                 </div>
                             ))}
@@ -239,9 +239,9 @@ export default function AgendaPage() {
                             const dayOfWeek = DAYS_OF_WEEK[new Date(year, month, day).getDay()];
 
                             return (
-                                <div key={day} className={`flex gap-4 p-4 rounded-2xl border transition-all ${isToday ? 'bg-white/[0.03] border-pink-500/30 shadow-lg shadow-pink-500/5' : 'bg-transparent border-white/5 hover:bg-white/[0.02]'}`}>
+                                <div key={day} className={`flex gap-4 p-4 rounded-2xl border transition-all ${isToday ? 'bg-white/[0.03] border-pink-500/30 shadow-lg shadow-black/40' : 'bg-transparent border-white/5 hover:bg-white/[0.02]'}`}>
                                     <div className="flex flex-col items-center min-w-[3.5rem]">
-                                        <span className="text-xs font-bold text-slate-500 uppercase">{dayOfWeek}</span>
+                                        <span className="text-xs font-bold text-zinc-500 uppercase">{dayOfWeek}</span>
                                         <span className={`text-2xl font-bold mt-1 ${isToday ? 'text-pink-500' : 'text-white'}`}>{day}</span>
                                     </div>
                                     <div className="flex-1 space-y-2 border-l border-white/10 pl-4 py-1">
@@ -251,9 +251,9 @@ export default function AgendaPage() {
                                                     key={event.id}
                                                     onClick={(e) => handleEventClick(event, e)}
                                                     className={`p-3 rounded-xl border cursor-pointer transition-all hover:scale-[1.01] flex items-center justify-between
-                                                        ${event.type === 'delivery' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' :
+                                                        ${event.type === 'delivery' ? 'bg-emerald-500/5 border-emerald-500/20 text-zinc-100' :
                                                             event.type === 'meeting' ? 'bg-blue-500/5 border-blue-500/20 text-blue-400' :
-                                                                'bg-slate-700/20 border-slate-600/30 text-slate-400'}`}
+                                                                'bg-zinc-700/20 border-zinc-600/30 text-zinc-400'}`}
                                                 >
                                                     <span className="font-medium truncate">{event.title}</span>
                                                     <span className="text-[10px] opacity-70 border border-white/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -265,7 +265,7 @@ export default function AgendaPage() {
                                             <div className="h-full flex items-center">
                                                 <button
                                                     onClick={() => handleDayClick(day)}
-                                                    className="text-sm text-slate-600 hover:text-slate-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+                                                    className="text-sm text-zinc-600 hover:text-zinc-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
                                                 >
                                                     <Plus size={14} />
                                                     Sin eventos
@@ -283,29 +283,29 @@ export default function AgendaPage() {
             {/* Event Details Modal */}
             {selectedEvent && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200 p-8 space-y-6 relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200 p-8 space-y-6 relative overflow-hidden">
                         {/* Background Splashes */}
                         <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 pointer-events-none
-                            ${selectedEvent.type === 'delivery' ? 'bg-emerald-500' : selectedEvent.type === 'meeting' ? 'bg-blue-500' : 'bg-slate-500'}`} />
+                            ${selectedEvent.type === 'delivery' ? 'bg-emerald-500' : selectedEvent.type === 'meeting' ? 'bg-blue-500' : 'bg-zinc-500'}`} />
 
                         <div className="flex justify-between items-start relative z-10">
                             <div>
                                 <h3 className="font-bold text-xl text-white leading-tight">{selectedEvent.title}</h3>
                                 <div className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider mt-3
-                                    ${selectedEvent.type === 'delivery' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                    ${selectedEvent.type === 'delivery' ? 'bg-emerald-500/10 text-zinc-100 border border-emerald-500/20' :
                                         selectedEvent.type === 'meeting' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                                            'bg-slate-700/50 text-slate-300 border border-slate-600/50'}`}>
+                                            'bg-zinc-700/50 text-zinc-300 border border-zinc-600/50'}`}>
                                     {selectedEvent.type === 'delivery' ? 'Entrega' : selectedEvent.type === 'meeting' ? 'Cita' : 'Evento'}
                                 </div>
                             </div>
-                            <button onClick={() => setSelectedEvent(null)} className="p-2 -mr-2 -mt-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X size={20} /></button>
+                            <button onClick={() => setSelectedEvent(null)} className="p-2 -mr-2 -mt-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X size={20} /></button>
                         </div>
 
                         <div className="space-y-6 relative z-10">
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Fecha</label>
-                                <p className="text-slate-200 font-medium text-lg flex items-center gap-2">
-                                    <CalendarIcon size={16} className="text-slate-400" />
+                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Fecha</label>
+                                <p className="text-zinc-200 font-medium text-lg flex items-center gap-2">
+                                    <CalendarIcon size={16} className="text-zinc-400" />
                                     {selectedEvent.date}
                                 </p>
                             </div>
@@ -314,12 +314,12 @@ export default function AgendaPage() {
                                 <div className="pt-2">
                                     <a
                                         href={`/pedidos?id=${selectedEvent.id.substring(4)}`}
-                                        className="group w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:-translate-y-0.5"
+                                        className="group w-full flex items-center justify-center gap-2 bg-zinc-900 border border-zinc-800 hover:from-blue-500 hover:to-indigo-500 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-black/40 hover:shadow-black/40 hover:-translate-y-0.5"
                                     >
                                         <span>Ver Detalle del Pedido</span>
                                         <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                                     </a>
-                                    <p className="text-xs text-center text-slate-500 mt-3 flex items-center justify-center gap-1.5">
+                                    <p className="text-xs text-center text-zinc-500 mt-3 flex items-center justify-center gap-1.5">
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                         Evento sincronizado automáticamente
                                     </p>
@@ -346,29 +346,29 @@ export default function AgendaPage() {
             {/* Create Event Modal */}
             {showModal && !selectedEvent && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200 p-8 space-y-6">
+                    <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200 p-8 space-y-6">
                         <div className="flex justify-between items-center pb-4 border-b border-white/10">
                             <h3 className="font-bold text-xl text-white">Nuevo Evento</h3>
-                            <button onClick={() => setShowModal(false)} className="p-2 -mr-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X size={20} /></button>
+                            <button onClick={() => setShowModal(false)} className="p-2 -mr-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X size={20} /></button>
                         </div>
 
                         <div className="bg-white/5 rounded-xl p-3 flex items-center gap-3 border border-white/5">
-                            <div className="p-2 bg-white/5 rounded-lg text-slate-300">
+                            <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
                                 <CalendarIcon size={18} />
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Fecha Seleccionada</p>
+                                <p className="text-xs text-zinc-400 uppercase font-bold tracking-wider">Fecha Seleccionada</p>
                                 <p className="text-white font-medium">{selectedDate}</p>
                             </div>
                         </div>
 
                         <form onSubmit={handleSaveEvent} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-slate-300 ml-1">Título del Evento</label>
+                                <label className="text-sm font-semibold text-zinc-300 ml-1">Título del Evento</label>
                                 <input
                                     autoFocus
                                     type="text"
-                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-500/50 focus:ring-4 focus:ring-pink-500/10 text-white placeholder-slate-500 transition-all font-medium"
+                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-500/50 focus:ring-4 focus:ring-pink-500/10 text-white placeholder-zinc-500 transition-all font-medium"
                                     placeholder="Ej. Comprar materiales..."
                                     value={newEventTitle}
                                     onChange={e => setNewEventTitle(e.target.value)}
@@ -376,25 +376,25 @@ export default function AgendaPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-slate-300 ml-1">Tipo de Evento</label>
+                                <label className="text-sm font-semibold text-zinc-300 ml-1">Tipo de Evento</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setNewEventType('delivery')}
-                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${newEventType === 'delivery' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-lg shadow-emerald-500/10' : 'bg-black/20 border-white/5 text-slate-400 hover:bg-white/5'}`}
+                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${newEventType === 'delivery' ? 'bg-emerald-500/20 border-emerald-500/50 text-zinc-100 shadow-lg shadow-black/40' : 'bg-black/20 border-white/5 text-zinc-400 hover:bg-white/5'}`}
                                     >
                                         Entrega
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setNewEventType('meeting')}
-                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${newEventType === 'meeting' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/10' : 'bg-black/20 border-white/5 text-slate-400 hover:bg-white/5'}`}
+                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${newEventType === 'meeting' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 shadow-lg shadow-black/40' : 'bg-black/20 border-white/5 text-zinc-400 hover:bg-white/5'}`}
                                     >
                                         Cita
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-pink-600/20 hover:shadow-pink-600/40 hover:-translate-y-0.5 transition-all">Guardar Evento</button>
+                            <button type="submit" className="w-full bg-zinc-900 border border-zinc-800 hover:from-pink-500 hover:to-rose-500 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-black/40 hover:shadow-black/40 hover:-translate-y-0.5 transition-all">Guardar Evento</button>
                         </form>
                     </div>
                 </div>

@@ -143,7 +143,7 @@ export default function NewProductPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="mb-8 flex items-center justify-between">
@@ -152,14 +152,14 @@ export default function NewProductPage() {
                             href="/tienda"
                             className="group flex items-center justify-center w-12 h-12 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
                         >
-                            <ArrowLeft className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
+                            <ArrowLeft className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
                         </Link>
                         <div>
                             <h1 className="text-3xl font-black text-white flex items-center gap-3">
-                                <ShoppingBag className="w-8 h-8 text-purple-400" />
+                                <ShoppingBag className="w-8 h-8 text-zinc-100" />
                                 Nuevo Producto
                             </h1>
-                            <p className="text-slate-400 mt-1">Publicar prenda en la tienda online</p>
+                            <p className="text-zinc-400 mt-1">Publicar prenda en la tienda online</p>
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@ export default function NewProductPage() {
 
                             {/* Name */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     <Shirt className="w-4 h-4 text-blue-400" />
                                     Nombre del Producto
                                 </label>
@@ -181,14 +181,14 @@ export default function NewProductPage() {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Ej. Camiseta Oversize Wingx..."
-                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-slate-500"
+                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500"
                                 />
                             </div>
 
                             {/* Description */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                                    <Tag className="w-4 h-4 text-emerald-400" />
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <Tag className="w-4 h-4 text-zinc-100" />
                                     Descripción
                                 </label>
                                 <textarea
@@ -197,15 +197,15 @@ export default function NewProductPage() {
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Detalles sobre la tela, ajuste, etc..."
-                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-slate-500 resize-none"
+                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500 resize-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Price */}
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                                        <DollarSign className="w-4 h-4 text-amber-400" />
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+                                        <DollarSign className="w-4 h-4 text-zinc-100" />
                                         Precio (USD)
                                     </label>
                                     <input
@@ -216,13 +216,13 @@ export default function NewProductPage() {
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
                                         placeholder="50.00"
-                                        className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-slate-500 font-mono"
+                                        className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500 font-mono"
                                     />
                                 </div>
 
                                 {/* Gender Selection */}
                                 <div className="space-y-4">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                         Genero / Sexo
                                     </label>
                                     <div className="flex gap-2">
@@ -232,8 +232,8 @@ export default function NewProductPage() {
                                                 type="button"
                                                 onClick={() => setGender(g as any)}
                                                 className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all border ${gender === g
-                                                    ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20'
-                                                    : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'
+                                                    ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-black/40'
+                                                    : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10'
                                                     }`}
                                             >
                                                 {g}
@@ -244,15 +244,15 @@ export default function NewProductPage() {
 
                                 {/* Categories (Structured) */}
                                 <div className="space-y-4 md:col-span-2">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                                        <Tag className="w-4 h-4 text-pink-400" />
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+                                        <Tag className="w-4 h-4 text-zinc-100" />
                                         Categoría y Subcategorías
                                     </label>
 
                                     <div className="bg-black/20 rounded-xl p-4 space-y-4 border border-white/5">
                                         {/* Main Category */}
                                         <div>
-                                            <p className="text-xs text-slate-400 mb-2 font-medium">Categoría Principal</p>
+                                            <p className="text-xs text-zinc-400 mb-2 font-medium">Categoría Principal</p>
                                             <div className="flex flex-wrap gap-2">
                                                 {Object.keys(PRODUCT_CATEGORIES).map(cat => (
                                                     <button
@@ -267,8 +267,8 @@ export default function NewProductPage() {
                                                             }
                                                         }}
                                                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${categories[0] === cat
-                                                            ? 'bg-pink-500 text-white border-pink-500 shadow-lg shadow-pink-500/20'
-                                                            : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                            ? 'bg-pink-500 text-white border-pink-500 shadow-lg shadow-black/40'
+                                                            : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                             }`}
                                                     >
                                                         {cat}
@@ -280,7 +280,7 @@ export default function NewProductPage() {
                                         {/* Subcategories */}
                                         {categories.length > 0 && PRODUCT_CATEGORIES[categories[0]] && (
                                             <div className="animate-in slide-in-from-top-2 duration-300">
-                                                <p className="text-xs text-slate-400 mb-2 font-medium flex items-center gap-2">
+                                                <p className="text-xs text-zinc-400 mb-2 font-medium flex items-center gap-2">
                                                     Subcategorías de <span className="text-white font-bold">{categories[0]}</span>
                                                 </p>
                                                 <div className="flex flex-wrap gap-2">
@@ -297,7 +297,7 @@ export default function NewProductPage() {
                                                             }}
                                                             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${categories.includes(sub)
                                                                 ? 'bg-purple-500/50 text-white border-purple-500/50'
-                                                                : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'
+                                                                : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10'
                                                                 }`}
                                                         >
                                                             {sub}
@@ -315,7 +315,7 @@ export default function NewProductPage() {
 
                                 {/* Featured Toggle */}
                                 <div className="space-y-2 md:col-span-2">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider cursor-pointer select-none">
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider cursor-pointer select-none">
                                         <div className="relative">
                                             <input
                                                 type="checkbox"
@@ -323,11 +323,11 @@ export default function NewProductPage() {
                                                 onChange={(e) => setFeatured(e.target.checked)}
                                                 className="sr-only peer"
                                             />
-                                            <div className="w-11 h-6 bg-slate-700/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                                            <div className="w-11 h-6 bg-zinc-700/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Star className={`w-4 h-4 ${featured ? 'fill-yellow-500 text-yellow-500' : 'text-slate-500'}`} />
-                                            <span className={featured ? 'text-yellow-400 font-bold' : 'text-slate-400'}>
+                                            <Star className={`w-4 h-4 ${featured ? 'fill-yellow-500 text-yellow-500' : 'text-zinc-500'}`} />
+                                            <span className={featured ? 'text-yellow-400 font-bold' : 'text-zinc-400'}>
                                                 Destacar Producto en el Inicio
                                             </span>
                                         </div>
@@ -337,8 +337,8 @@ export default function NewProductPage() {
 
                             {/* Image Upload */}
                             <div className="space-y-4">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                                    <ImageIcon className="w-4 h-4 text-cyan-400" />
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <ImageIcon className="w-4 h-4 text-zinc-100" />
                                     Imágenes del Producto (Máx 5)
                                 </label>
 
@@ -375,10 +375,10 @@ export default function NewProductPage() {
                                                 console.error("Upload error", err);
                                                 Swal.fire("Error", "No se pudo subir la imagen", "error");
                                             }}
-                                            className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20 transition-all cursor-pointer"
+                                            className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-zinc-100 hover:file:bg-purple-500/20 transition-all cursor-pointer"
                                         />
 
-                                        <p className="text-xs text-slate-500">
+                                        <p className="text-xs text-zinc-500">
                                             La primera imagen será la portada. Haz clic en una imagen para establecerla como portada.
                                         </p>
                                     </div>
@@ -388,7 +388,7 @@ export default function NewProductPage() {
                                 {images.length > 0 && (
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                                         {images.map((img, idx) => (
-                                            <div key={idx} className={`relative group aspect-square rounded-xl overflow-hidden border-2 transition-all ${imageUrl === img ? 'border-purple-500 shadow-lg shadow-purple-500/20' : 'border-white/10'}`}>
+                                            <div key={idx} className={`relative group aspect-square rounded-xl overflow-hidden border-2 transition-all ${imageUrl === img ? 'border-purple-500 shadow-lg shadow-black/40' : 'border-white/10'}`}>
                                                 <img
                                                     src={img}
                                                     alt={`Product ${idx}`}
@@ -423,7 +423,7 @@ export default function NewProductPage() {
 
                             {/* Sizes */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     <Ruler className="w-4 h-4 text-indigo-400" />
                                     Tallas Disponibles
                                 </label>
@@ -434,8 +434,8 @@ export default function NewProductPage() {
                                             type="button"
                                             onClick={() => handleSizeToggle(size)}
                                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all border ${selectedSizes.includes(size)
-                                                ? 'bg-purple-500 text-white border-purple-500 shadow-lg shadow-purple-500/20'
-                                                : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'
+                                                ? 'bg-purple-500 text-white border-purple-500 shadow-lg shadow-black/40'
+                                                : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10'
                                                 }`}
                                         >
                                             {size}
@@ -446,11 +446,11 @@ export default function NewProductPage() {
 
                             {/* Colors */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
                                     <Palette className="w-4 h-4 text-rose-400" />
                                     Colores Disponibles
                                     {selectedColors.length > 0 && (
-                                        <span className="text-xs text-purple-400 font-normal normal-case">
+                                        <span className="text-xs text-zinc-100 font-normal normal-case">
                                             ({selectedColors.length} seleccionados)
                                         </span>
                                     )}
@@ -465,9 +465,9 @@ export default function NewProductPage() {
                                                 title={color.name}
                                                 onClick={() => handleColorToggle(color.name)}
                                                 className={`relative w-10 h-10 rounded-full transition-all border-2 flex items-center justify-center ${selectedColors.includes(color.name)
-                                                    ? 'ring-2 ring-offset-2 ring-purple-500 ring-offset-slate-900 scale-110'
+                                                    ? 'ring-2 ring-offset-2 ring-purple-500 ring-offset-zinc-900 scale-110'
                                                     : 'hover:scale-110'
-                                                    } ${isLight ? 'border-slate-600' : 'border-transparent'}`}
+                                                    } ${isLight ? 'border-zinc-600' : 'border-transparent'}`}
                                                 style={{ backgroundColor: color.hex }}
                                             >
                                                 {selectedColors.includes(color.name) && (
@@ -480,7 +480,7 @@ export default function NewProductPage() {
                                 {selectedColors.length > 0 && (
                                     <div className="flex flex-wrap gap-1 mt-2">
                                         {selectedColors.map(color => (
-                                            <span key={color} className="text-xs bg-white/10 text-slate-300 px-2 py-1 rounded-full">
+                                            <span key={color} className="text-xs bg-white/10 text-zinc-300 px-2 py-1 rounded-full">
                                                 {color}
                                             </span>
                                         ))}
@@ -489,7 +489,7 @@ export default function NewProductPage() {
 
                                 {/* Custom Colors */}
                                 <div className="mt-4 pt-4 border-t border-white/10">
-                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 block">
+                                    <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2 block">
                                         Agregar Color Personalizado
                                     </label>
                                     <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
@@ -507,7 +507,7 @@ export default function NewProductPage() {
                                                 value={newColorName}
                                                 onChange={(e) => setNewColorName(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomColor())}
-                                                className="flex-1 px-3 py-2.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 w-full"
+                                                className="flex-1 px-3 py-2.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 w-full"
                                             />
                                         </div>
                                         <button
@@ -533,11 +533,11 @@ export default function NewProductPage() {
                                                         className="w-6 h-6 rounded-full border border-white/20"
                                                         style={{ backgroundColor: colorHex }}
                                                     />
-                                                    <span className="text-xs text-slate-300">{colorName}</span>
+                                                    <span className="text-xs text-zinc-300">{colorName}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveCustomColor(colorName)}
-                                                        className="text-slate-400 hover:text-red-400 transition-colors"
+                                                        className="text-zinc-400 hover:text-red-400 transition-colors"
                                                     >
                                                         <X className="w-3 h-3" />
                                                     </button>
@@ -562,7 +562,7 @@ export default function NewProductPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 disabled:shadow-none flex items-center gap-2 text-sm"
+                            className="group px-8 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:from-purple-600 hover:to-pink-600 disabled:from-zinc-600 disabled:to-zinc-600 text-white font-bold transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 disabled:shadow-none flex items-center gap-2 text-sm"
                         >
                             <Save className="w-4 h-4" />
                             {loading ? "Publicando..." : "Publicar Producto"}

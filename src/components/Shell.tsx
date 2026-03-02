@@ -33,10 +33,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     }
 
     if (loading) {
-        return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-500">
+        return <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500">
             <div className="flex flex-col items-center gap-4 animate-pulse">
-                <div className="w-12 h-12 rounded-xl bg-slate-800"></div>
-                <div className="h-4 w-32 bg-slate-800 rounded"></div>
+                <div className="w-12 h-12 rounded-xl bg-zinc-800"></div>
+                <div className="h-4 w-32 bg-zinc-800 rounded"></div>
             </div>
         </div>;
     }
@@ -49,17 +49,17 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
             <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
                 {/* Mobile Header */}
-                <header className="lg:hidden flex items-center justify-between p-4 bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-30">
+                <header className="lg:hidden flex items-center justify-between px-4 py-2.5 bg-zinc-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-30">
                     <div className="flex items-center gap-3">
-                        <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                            <Menu size={24} />
+                        <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                            <Menu size={22} />
                         </button>
                         <Link href="/" className="font-bold text-lg text-white tracking-tight">Wingx</Link>
                     </div>
                 </header>
 
-                <main className="flex-1 p-4 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24 lg:pb-8">
-                    <div className="max-w-7xl mx-auto space-y-8">
+                <main className="flex-1 px-3 py-3 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 lg:pb-8">
+                    <div className="max-w-7xl mx-auto space-y-5 lg:space-y-8">
                         {children}
                     </div>
                 </main>
@@ -78,7 +78,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             {/* Toast de nuevo pedido */}
             {hasNewOrders && latestOrder && (
                 <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl shadow-2xl shadow-emerald-500/30 p-4 pr-12 max-w-sm border border-white/10">
+                    <div className="bg-zinc-900 border border-zinc-800 text-white rounded-2xl shadow-2xl shadow-black/40 p-4 pr-12 max-w-sm border border-white/10">
                         <button
                             onClick={clearNewOrders}
                             className="absolute top-3 right-3 p-1 hover:bg-white/20 rounded-lg transition-colors"
