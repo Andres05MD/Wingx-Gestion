@@ -3,7 +3,8 @@
 import { useState, useEffect, memo } from "react";
 import { Client, saveClient, updateClient } from "@/services/storage";
 import Swal from "sweetalert2";
-import { X, Ruler, User, Phone, FileText, Sparkles } from "lucide-react";
+import { X, Ruler, User, Phone, FileText } from "lucide-react";
+import { FormInput } from "@/components/ui";
 
 interface ClientFormProps {
     initialData?: Client;
@@ -83,202 +84,175 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-            <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl shadow-black/40 animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div className="relative w-full max-w-lg bg-zinc-950 border border-white/10 rounded-2xl shadow-2xl shadow-black/40 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="relative p-6 border-b border-white/10 bg-gradient-to-r from-purple-500/10 via-transparent to-blue-500/10">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                                <Sparkles className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-black text-white">
-                                    {initialData ? "Editar Cliente" : "Nuevo Cliente"}
-                                </h2>
-                                <p className="text-sm text-zinc-400 mt-0.5">
-                                    {initialData ? "Actualiza la información del cliente" : "Registra un nuevo cliente"}
-                                </p>
-                            </div>
+                <div className="sticky top-0 bg-zinc-950/95 backdrop-blur-xl border-b border-white/5 p-5 flex items-center justify-between z-10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center">
+                            <User className="w-5 h-5 text-black" />
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="w-10 h-10 rounded-xl hover:bg-white/10 text-zinc-400 hover:text-white transition-all flex items-center justify-center"
-                        >
-                            <X size={20} />
-                        </button>
+                        <h2 className="text-xl font-bold text-white">{initialData ? "Editar Cliente" : "Nuevo Cliente"}</h2>
                     </div>
+                    <button
+                        onClick={onClose}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                        aria-label="Cerrar modal"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
 
-                {/* Form Content */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
-                    {/* Basic Info Card */}
-                    <div className="md:bg-gradient-to-br md:from-white/5 md:to-transparent md:backdrop-blur-xl md:rounded-2xl md:border md:border-white/10 md:p-6 md:shadow-lg">
-                        <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/10">
-                            <User className="w-5 h-5 text-blue-400" />
-                            <h3 className="text-lg font-bold text-white">Información Básica</h3>
-                        </div>
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-5 space-y-5">
+                    {/* Nombre */}
+                    <FormInput
+                        label="Nombre Completo"
+                        name="name"
+                        required
+                        placeholder="Ej. Ana María Pérez"
+                        value={formData.name}
+                        onChange={handleChange}
+                        icon={<User className="w-3 h-3" />}
+                    />
 
-                        <div className="space-y-4">
-                            {/* Name */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
-                                    <span className="text-red-400">*</span>
-                                    Nombre Completo
-                                </label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    required
-                                    placeholder="Ej. Ana María Pérez"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-blue-500/50 focus:bg-black/30 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-zinc-500 text-base"
-                                />
-                            </div>
-
-                            {/* Phone */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
-                                    <Phone className="w-4 h-4 text-green-400" />
-                                    Teléfono / WhatsApp
-                                </label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    placeholder="Ej. +58 412-1234567"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3.5 rounded-xl bg-black/20 border border-white/10 focus:border-green-500/50 focus:bg-black/30 focus:ring-4 focus:ring-green-500/10 outline-none transition-all text-white placeholder-zinc-500 text-base"
-                                />
-                            </div>
-
-                            {/* Notes */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-zinc-300 uppercase tracking-wider">
-                                    <FileText className="w-4 h-4 text-zinc-100" />
-                                    Notas Adicionales
-                                </label>
-                                <textarea
-                                    name="notes"
-                                    rows={3}
-                                    placeholder="Preferencias, tallas habituales, detalles importantes..."
-                                    value={formData.notes}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-amber-500/50 focus:bg-black/30 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all resize-none text-white placeholder-zinc-500"
-                                />
-                            </div>
-                        </div>
+                    {/* Teléfono y Notas */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormInput
+                            label="Teléfono / WhatsApp"
+                            name="phone"
+                            placeholder="+58 ..."
+                            value={formData.phone}
+                            onChange={handleChange}
+                            icon={<Phone className="w-3 h-3" />}
+                        />
+                        <FormInput
+                            label="Notas Rápidas"
+                            name="notes"
+                            placeholder="Detalles sobre el cliente..."
+                            value={formData.notes}
+                            onChange={handleChange}
+                            icon={<FileText className="w-3 h-3" />}
+                        />
                     </div>
 
-                    {/* Measurements Card */}
-                    <div className="md:bg-gradient-to-br md:from-white/5 md:to-transparent md:backdrop-blur-xl md:rounded-2xl md:border md:border-white/10 overflow-hidden md:shadow-lg mt-6 md:mt-0">
+                    {/* Measurements Section */}
+                    <div className="pt-2 border-t border-white/5">
                         <button
                             type="button"
                             onClick={() => setShowMeasurements(!showMeasurements)}
-                            className="w-full flex items-center justify-between py-4 md:p-6 border-t border-white/10 md:border-none hover:bg-white/5 transition-colors group"
+                            className="w-full flex items-center justify-between p-3.5 rounded-xl bg-black/30 border border-white/5 hover:border-white/10 transition-all group cursor-pointer active:scale-[0.98]"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Ruler className="w-5 h-5 text-white" />
+                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${showMeasurements ? 'bg-white' : 'bg-white/5 border border-white/10 group-hover:bg-white/10'}`}>
+                                    <Ruler className={`w-4 h-4 transition-colors ${showMeasurements ? 'text-black' : 'text-zinc-400'}`} />
                                 </div>
                                 <div className="text-left">
-                                    <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
-                                        Medidas Corporales
-                                    </h3>
-                                    <p className="text-xs text-zinc-500 mt-0.5">Opcional - Medidas para personalización</p>
+                                    <h3 className="text-sm font-bold text-white">Medidas Corporales</h3>
+                                    <p className="text-[10px] text-zinc-500">Dimensiones para personalización</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className={`text-xs font-bold uppercase px-3 py-1 rounded-full transition-all ${showMeasurements
-                                    ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'bg-white/5 text-zinc-500'
-                                    }`}>
-                                    {showMeasurements ? "Ocultar" : "Mostrar"}
-                                </span>
-                                <svg
-                                    className={`w-5 h-5 text-zinc-400 transition-transform duration-300 ${showMeasurements ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${showMeasurements ? 'bg-white text-black rotate-180' : 'bg-white/5 text-zinc-400'}`}>
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
                         </button>
 
                         {showMeasurements && (
-                            <div className="px-6 pb-6 animate-in slide-in-from-top-4 fade-in duration-300">
-                                <div className="bg-black/20 p-5 rounded-xl border border-white/5">
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div className="mt-3 space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                                {/* Parte Superior */}
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center gap-2 px-1">
+                                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Parte Superior</span>
+                                        <div className="flex-1 h-px bg-white/5" />
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { key: 'chest', label: 'Pecho/Busto', icon: '👕' },
-                                            { key: 'waist', label: 'Cintura', icon: '⚡' },
-                                            { key: 'hip', label: 'Cadera', icon: '🎯' },
-                                            { key: 'shoulder', label: 'Hombro', icon: '📐' },
-                                            { key: 'length', label: 'Largo Total', icon: '📏' },
-                                            { key: 'pantsLength', label: 'Largo Pantalón', icon: '👖' },
+                                            { key: 'chest', label: 'Busto' },
+                                            { key: 'shoulder', label: 'Hombros' },
+                                            { key: 'waist', label: 'Cintura' },
                                         ].map((field) => (
-                                            <div key={field.key} className="space-y-1.5">
-                                                <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 uppercase tracking-wide">
-                                                    <span className="text-sm">{field.icon}</span>
-                                                    {field.label}
-                                                </label>
+                                            <div key={field.key} className="space-y-1">
+                                                <label className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider pl-1">{field.label}</label>
                                                 <div className="relative">
                                                     <input
                                                         type="number"
                                                         name={field.key}
-                                                        step="0.1"
+                                                        step={0.1}
+                                                        placeholder="—"
                                                         // @ts-ignore
                                                         value={formData.measurements?.[field.key] || ''}
                                                         onChange={handleMeasurementChange}
-                                                        className="w-full px-3 py-2.5 pr-10 rounded-lg bg-zinc-950/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-zinc-600 font-mono"
-                                                        placeholder="0.0"
+                                                        className="w-full pl-3 pr-9 py-2.5 rounded-lg bg-black/40 border border-white/5 focus:border-white/20 outline-none text-white text-sm font-mono font-semibold transition-all min-h-[40px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                     />
-                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-medium">cm</span>
+                                                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-zinc-600 uppercase pointer-events-none">cm</span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
+                                </div>
 
-                                    <div className="mt-4 pt-4 border-t border-white/5">
-                                        <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 uppercase tracking-wide mb-2">
-                                            <span className="text-sm">📝</span>
-                                            Observaciones Adicionales
-                                        </label>
-                                        <textarea
-                                            name="custom"
-                                            rows={2}
-                                            placeholder="Medidas especiales, ajustes requeridos..."
-                                            // @ts-ignore
-                                            value={formData.measurements?.custom || ''}
-                                            onChange={handleMeasurementChange}
-                                            className="w-full px-3 py-2.5 rounded-lg bg-zinc-950/50 border border-white/10 focus:border-indigo-500/50 outline-none text-sm text-white placeholder-zinc-600 resize-none"
-                                        />
+                                {/* Parte Inferior */}
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center gap-2 px-1">
+                                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Parte Inferior</span>
+                                        <div className="flex-1 h-px bg-white/5" />
                                     </div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { key: 'hip', label: 'Cadera' },
+                                            { key: 'length', label: 'Largo' },
+                                            { key: 'pantsLength', label: 'Entrepierna' },
+                                        ].map((field) => (
+                                            <div key={field.key} className="space-y-1">
+                                                <label className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider pl-1">{field.label}</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        name={field.key}
+                                                        step={0.1}
+                                                        placeholder="—"
+                                                        // @ts-ignore
+                                                        value={formData.measurements?.[field.key] || ''}
+                                                        onChange={handleMeasurementChange}
+                                                        className="w-full pl-3 pr-9 py-2.5 rounded-lg bg-black/40 border border-white/5 focus:border-white/20 outline-none text-white text-sm font-mono font-semibold transition-all min-h-[40px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    />
+                                                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-zinc-600 uppercase pointer-events-none">cm</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Observaciones */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider pl-1 flex items-center gap-1.5">
+                                        <FileText className="w-3 h-3" />
+                                        Observaciones
+                                    </label>
+                                    <textarea
+                                        name="custom"
+                                        rows={2}
+                                        placeholder="Ajustes especiales, notas de talla..."
+                                        // @ts-ignore
+                                        value={formData.measurements?.custom || ''}
+                                        onChange={handleMeasurementChange}
+                                        className="w-full px-3 py-2.5 rounded-lg bg-black/40 border border-white/5 focus:border-white/20 outline-none text-white text-sm placeholder:text-zinc-600 transition-all resize-none min-h-[44px]"
+                                    />
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-6 md:pt-4 border-t border-white/10 md:border-none mt-6 md:mt-0">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-6 py-4 md:py-3 rounded-xl md:bg-white/5 border border-white/5 md:border-white/10 md:hover:bg-white/10 hover:border-white/20 text-white font-semibold transition-all duration-300 text-center text-sm"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="group px-8 py-4 md:py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:from-purple-600 hover:to-blue-600 disabled:from-zinc-600 disabled:to-zinc-600 text-white font-bold transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 disabled:shadow-none flex items-center justify-center gap-2 text-sm"
-                        >
-                            <Sparkles className="w-5 h-5 md:w-4 md:h-4" />
-                            {loading ? "Guardando..." : initialData ? "Actualizar Cliente" : "Guardar Cliente"}
-                        </button>
-                    </div>
+                    {/* Submit */}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-black/40 cursor-pointer min-h-[44px]"
+                    >
+                        {loading ? 'Guardando...' : initialData ? 'Actualizar Cliente' : 'Crear Cliente'}
+                    </button>
                 </form>
             </div>
         </div>

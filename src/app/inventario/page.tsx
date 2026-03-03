@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
-import { Plus, Search, Edit, Trash, Package, Shirt } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Search, Trash, Package, Shirt } from 'lucide-react';
 import { deleteStockItem, StockItem, updateStockItem } from '@/services/storage';
 import Swal from 'sweetalert2';
 import { useAuth } from "@/context/AuthContext";
 import { useStock } from "@/context/StockContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import { logger } from "@/lib/logger";
+import StockFormModal from "@/components/StockFormModal";
 
 export default function InventarioPage() {
     const { role, user } = useAuth();
@@ -16,6 +16,7 @@ export default function InventarioPage() {
     const { stockItems, loading, refreshStock } = useStock();
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [showForm, setShowForm] = useState(false);
     const debouncedSearch = useDebounce(searchTerm, 300);
 
     // ✅ Renderizado optimizado
@@ -76,13 +77,13 @@ export default function InventarioPage() {
                     </h1>
                     <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Prendas listas para entrega inmediata</p>
                 </div>
-                <Link
-                    href="/inventario/nuevo"
-                    className="group bg-zinc-900 border border-zinc-800 hover:from-emerald-400 hover:to-teal-400 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
+                <button
+                    onClick={() => setShowForm(true)}
+                    className="group bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:scale-105 text-sm md:text-base cursor-pointer"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Agregar Stock</span>
-                </Link>
+                </button>
             </div>
 
             {/* Search */}
@@ -176,6 +177,14 @@ export default function InventarioPage() {
                     ))
                 )}
             </div>
+
+            {/* Modal de Formulario */}
+            {showForm && (
+                <StockFormModal
+                    onClose={() => setShowForm(false)}
+                    onSuccess={() => { setShowForm(false); refreshStock(); }}
+                />
+            )}
         </div>
     );
 }

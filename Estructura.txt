@@ -83,3 +83,38 @@ Módulos Funcionales:
 
 9. Configuración Global:
    - Tasa de cambio global para cálculos de precios (Bs.).
+
+
+
+Objetivo:
+Implementar una nueva sección llamada "Bolsos" que permita gestionar ciclos de pagos grupales para financiar la fabricación de prendas.
+
+Requerimientos Técnicos:
+
+Estructura de Datos (Firestore):
+
+Colección bolsos: { nombre, periodo (semanal/quincenal), cantidad_participantes, precio_prenda, cuota_por_cliente, prenda_referencia_id, estado (reclutando/activo/finalizado), fecha_inicio }.
+
+Subcolección participantes: { cliente_id, nombre, turno_entrega, pagado_total (boolean), prenda_entregada (boolean) }.
+
+Subcolección pagos: { participante_id, numero_cuota, monto, fecha_pago, comprobante_url }.
+
+Funcionalidades de la Interfaz (UI):
+
+Dashboard de Bolsos: Vista de lista con filtros por estado.
+
+Creador de Bolso: Formulario para definir el periodo, el número de participantes y seleccionar la prenda (traer de colección productos o  agregar manualmente).
+
+Gestión de Participantes: Modal para seleccionar clientes de la colección clientes o agregar manualmente y asignarlos al bolso.
+
+Tablero de Control de Pagos: Una cuadrícula (grid) que muestre a los participantes y sus cuotas (pagadas/pendientes) según el periodo elegido.
+
+Logica de Entrega: Botón para marcar "Prenda Entregada" solo si el turno corresponde y el grupo ha cubierto el costo de fabricación de esa unidad.
+
+Reglas de Negocio:
+
+Calcular automáticamente el monto_cuota dividiendo el precio_prenda entre los participantes (o agregar manualmente).
+
+Validar que no se puedan agregar más clientes de los definidos en cantidad_participantes.
+
+Generar un calendario visual de quién recibe la prenda en cada fecha (semana X o quincena Y).

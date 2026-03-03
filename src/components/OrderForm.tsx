@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, memo } from "react";
-import { useRouter } from "next/navigation";
-import { Order, Garment, GarmentMaterial, getGarments, saveOrder, updateOrder, getOrder, saveMaterial, getMaterials, getClients, Client, saveGarment, updateStockByGarmentId, batchSaveMaterials } from "@/services/storage";
+import { Order, Garment, GarmentMaterial, saveOrder, updateOrder, getOrder, saveMaterial, getMaterials, saveGarment, updateStockByGarmentId, batchSaveMaterials } from "@/services/storage";
 import Swal from "sweetalert2";
-import { Plus, Trash, ArrowLeft, Save, Calendar as CalendarIcon, DollarSign, User, Shirt, Ruler, Package, Sparkles, CheckCircle2, Scissors, Truck } from "lucide-react";
-import Link from "next/link";
+import { Plus, Trash, X, DollarSign, User, Shirt, Ruler, Package, CheckCircle2, Truck, Calendar as CalendarIcon } from "lucide-react";
+import { FormInput, FormSelect } from "@/components/ui";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import { useAuth } from "@/context/AuthContext";
 import { useGarments } from "@/context/GarmentsContext";
@@ -20,14 +19,14 @@ registerLocale('es', es);
 
 interface OrderFormProps {
     id?: string;
+    onClose: () => void;
+    onSuccess: () => void;
 }
 
-const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
-    const router = useRouter();
+const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormProps) {
     const { formatBs } = useExchangeRate();
     const { role, user, loading: authLoading } = useAuth();
 
-    // ✨ Usando contextos globales - sin queries redundantes
     const { garments } = useGarments();
     const { clients } = useClients();
     const { getStockByGarmentId } = useStock();
@@ -93,7 +92,7 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
             setDeliveryDate(parseDate(order.deliveryDate));
         } else {
             Swal.fire("Error", "No se encontró el pedido", "error");
-            router.push("/pedidos");
+            onClose();
         }
         setLoading(false);
     }
@@ -102,7 +101,6 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
         const gId = e.target.value;
         setGarmentId(gId);
 
-        // ✅ Reseteo explícito cuando no hay garmentId
         if (!gId) {
             setGarmentName("");
             setPrice(0);
@@ -113,23 +111,19 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
         }
 
         const garment = garments.find(g => g.id === gId);
-
-        // ✅ Logging defensivo y reseteo si garment no encontrada
         if (!garment) {
-            console.warn(`Garment with ID ${gId} not found in loaded garments`);
+            console.warn(`Garment with ID ${gId} not found`);
             setGarmentName("");
             setPrice(0);
             setSelectedGarmentMaterials([]);
             return;
         }
 
-        // ✅ Validaciones de tipo con fallbacks
         setGarmentName(garment.name ?? "");
         setPrice(garment.price ?? 0);
         setSelectedGarmentMaterials(garment.materials ?? []);
     };
 
-    // ✅ Stock check optimizado - sin waterfall, datos ya cargados en context
     useEffect(() => {
         if (garmentId && !isNewGarment) {
             const available = getStockByGarmentId(garmentId);
@@ -187,10 +181,13 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
         try {
             if (id) {
                 await updateOrder(id, orderData);
-                Swal.fire("Éxito", "Pedido actualizado", "success");
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'success',
+                    title: 'Pedido actualizado', showConfirmButton: false, timer: 2500,
+                    background: '#18181b', color: '#fff',
+                });
             } else {
                 if (isNewGarment) {
-                    // Create and save the new garment
                     const newGarment: any = {
                         name: garmentName,
                         size: size,
@@ -200,26 +197,22 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
                         materials: customMaterials,
                         createdAt: new Date().toISOString()
                     };
-
                     const garmentRef = await saveGarment(newGarment);
                     orderData.garmentId = garmentRef.id;
                 }
 
-                // STOCK AUTOMATION: Deduct from inventory if toggle is on
                 if (useStockToggle && garmentId && user?.uid) {
                     const success = await updateStockByGarmentId(garmentId, -1, user.uid);
                     if (success) {
-                        orderData.status = "Entregado"; // Auto-complete if stock is used? Optional, but makes sense.
-                        // Or maybe just "Finalizado" immediately. Let's stick to current user selection or force "Entregado"
+                        orderData.status = "Entregado";
                         Swal.fire({ title: 'Stock Actualizado', text: 'Se descontó 1 unidad del inventario', icon: 'info', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
                     } else {
-                        Swal.fire("Advertencia", "No se pudo descontar del stock (quizás ya no queden)", "warning");
+                        Swal.fire("Advertencia", "No se pudo descontar del stock", "warning");
                     }
                 }
 
                 await saveOrder(orderData);
 
-                // Add materials to shopping list ONLY if NOT using stock
                 if (!useStockToggle) {
                     const materialsToSave = garmentId ? selectedGarmentMaterials : customMaterials;
                     if (materialsToSave.length > 0) {
@@ -227,9 +220,13 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
                     }
                 }
 
-                Swal.fire("Éxito", "Pedido creado", "success");
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'success',
+                    title: 'Pedido creado exitosamente', showConfirmButton: false, timer: 2500,
+                    background: '#18181b', color: '#fff',
+                });
             }
-            router.push("/pedidos");
+            onSuccess();
         } catch (error) {
             console.error(error);
             Swal.fire("Error", "No se pudo guardar", "error");
@@ -239,27 +236,13 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
     };
 
     async function addMaterialsToShoppingList(materials: GarmentMaterial[], sourceName: string) {
-        // ✅ Validación temprana de inputs
-        if (!materials || materials.length === 0) {
-            console.warn('addMaterialsToShoppingList: No materials to add');
-            return;
-        }
-
-        if (!user?.uid) {
-            console.warn('addMaterialsToShoppingList: User not authenticated, skipping');
-            return;
-        }
+        if (!materials || materials.length === 0) return;
+        if (!user?.uid) return;
 
         try {
             const existingMaterials = await getMaterials(role || undefined, user.uid);
+            if (!Array.isArray(existingMaterials)) return;
 
-            // ✅ Null check explícito
-            if (!Array.isArray(existingMaterials)) {
-                console.error('getMaterials returned invalid data:', existingMaterials);
-                return;
-            }
-
-            // ✅ Filtrar materiales que ya existen (no duplicar)
             const newMaterials = materials.filter(mat => {
                 if (!mat?.name) return false;
                 return !existingMaterials.some(
@@ -267,7 +250,6 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
                 );
             });
 
-            // ✅ Batch write: una sola petición de red para todos los materiales
             if (newMaterials.length > 0) {
                 await batchSaveMaterials(
                     newMaterials.map(mat => ({
@@ -280,15 +262,10 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
             }
         } catch (e) {
             console.error("Error saving materials:", e);
-            // ✅ Mostrar error al usuario sin bloquear el flujo
             Swal.fire({
-                icon: 'warning',
-                title: 'Advertencia',
+                icon: 'warning', title: 'Advertencia',
                 text: 'No se pudieron agregar algunos materiales a la lista',
-                toast: true,
-                position: 'top-end',
-                timer: 3000,
-                showConfirmButton: false
+                toast: true, position: 'top-end', timer: 3000, showConfirmButton: false
             });
         }
     }
@@ -296,401 +273,271 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
     const balance = Number(price) - Number(paidAmount);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4 md:p-6">
-            <div className="max-w-6xl mx-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div className="relative w-full max-w-lg bg-zinc-950 border border-white/10 rounded-2xl shadow-2xl shadow-black/40 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="mb-8 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/pedidos"
-                            className="group flex items-center justify-center w-12 h-12 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-                        >
-                            <ArrowLeft className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                        </Link>
-                        <div>
-                            <h1 className="text-3xl font-black text-white flex items-center gap-3">
-                                <Sparkles className="w-8 h-8 text-blue-400" />
-                                {id ? "Editar Pedido" : "Nuevo Pedido"}
-                            </h1>
-                            <p className="text-zinc-400 mt-1">Registra los detalles del encargo</p>
+                <div className="sticky top-0 bg-zinc-950/95 backdrop-blur-xl border-b border-white/5 p-5 flex items-center justify-between z-10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center">
+                            <Shirt className="w-5 h-5 text-black" />
                         </div>
+                        <h2 className="text-xl font-bold text-white">{id ? "Editar Pedido" : "Nuevo Pedido"}</h2>
                     </div>
+                    <button
+                        onClick={onClose}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                        aria-label="Cerrar modal"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Client & Garment Card */}
-                    <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl md:rounded-3xl border border-white/10 p-5 md:p-8 shadow-2xl shadow-black/20">
-                        <div className="flex items-center gap-3 mb-5 pb-5 border-b border-white/10">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                                <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                            </div>
-                            <h2 className="text-lg md:text-xl font-bold text-white">Cliente y Prenda</h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Client Selection */}
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                    {/* ═══ SECCIÓN 1: CLIENTE Y PRENDA ═══ */}
+                    <div className="space-y-4">
+                        {/* Cliente */}
+                        {isNewClient ? (
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Cliente
-                                </label>
-                                {isNewClient ? (
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            required
-                                            placeholder="Nombre del cliente"
-                                            value={clientName}
-                                            onChange={(e) => setClientName(e.target.value)}
-                                            className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white placeholder-zinc-500 pr-24 text-base md:text-lg"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => { setIsNewClient(false); setClientName(""); }}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-white/10 hover:bg-white/20 text-zinc-300 px-3 py-2 rounded-lg transition-colors"
-                                        >
-                                            Cancelar
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="relative">
-                                        <select
-                                            required
-                                            value={clientName}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                if (val === "new_client_trigger") {
-                                                    setIsNewClient(true);
-                                                    setClientName("");
-                                                } else {
-                                                    setClientName(val);
-                                                }
-                                            }}
-                                            className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white appearance-none cursor-pointer text-base md:text-lg"
-                                        >
-                                            <option value="">Seleccionar cliente...</option>
-                                            {clients.map((c) => (
-                                                <option key={c.id} value={c.name}>{c.name}</option>
-                                            ))}
-                                            <option value="new_client_trigger" className="text-zinc-100 font-semibold">+ Nuevo Cliente</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-zinc-400">
-                                                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                )}
+                                <FormInput
+                                    label="Cliente"
+                                    required
+                                    placeholder="Nombre del cliente"
+                                    value={clientName}
+                                    onChange={(e) => setClientName(e.target.value)}
+                                    icon={<User className="w-3 h-3" />}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsNewClient(false); setClientName(""); }}
+                                    className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    ← Seleccionar existente
+                                </button>
                             </div>
+                        ) : (
+                            <FormSelect
+                                label="Cliente"
+                                icon={<User className="w-3 h-3" />}
+                                placeholder="Seleccionar cliente..."
+                                value={clientName}
+                                onChange={(e) => setClientName(e.target.value)}
+                                options={clients.map((c) => ({ value: c.name, label: c.name }))}
+                                actionOption={{
+                                    label: "Nuevo Cliente",
+                                    onClick: () => { setIsNewClient(true); setClientName(""); }
+                                }}
+                            />
+                        )}
 
-                            {/* Garment Selection */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Prenda
-                                </label>
-                                {isNewGarment ? (
-                                    <div className="space-y-4">
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                required
-                                                placeholder="Nombre de la prenda"
-                                                value={garmentName}
-                                                onChange={(e) => setGarmentName(e.target.value)}
-                                                className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-cyan-500/50 focus:bg-black/40 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all text-white placeholder-zinc-500 pr-24 text-base md:text-lg"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setIsNewGarment(false);
-                                                    setGarmentName("");
-                                                    setGarmentId("");
-                                                    setLaborCost(0);
-                                                    setTransportCost(0);
-                                                    setCustomMaterials([]);
-                                                }}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-white/10 hover:bg-white/20 text-zinc-300 px-3 py-2 rounded-lg transition-colors"
-                                            >
-                                                Cancelar
-                                            </button>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-4">
-                                            {/* Labor Cost */}
-                                            <div className="space-y-2">
-                                                <label className="flex items-center gap-2 text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                                                    <Scissors className="w-3.5 h-3.5 text-zinc-100" />
-                                                    Mano de Obra
-                                                </label>
-                                                <div className="relative">
-                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        placeholder="0.00"
-                                                        value={laborCost === 0 ? '' : laborCost}
-                                                        onChange={(e) => setLaborCost(e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                                                        className="w-full pl-8 pr-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-amber-500/50 focus:bg-black/40 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-white font-mono placeholder-zinc-600 text-base md:text-lg"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Transport Cost */}
-                                            <div className="space-y-2">
-                                                <label className="flex items-center gap-2 text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                                                    <Truck className="w-3.5 h-3.5 text-blue-400" />
-                                                    Transporte
-                                                </label>
-                                                <div className="relative">
-                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        placeholder="0.00"
-                                                        value={transportCost === 0 ? '' : transportCost}
-                                                        onChange={(e) => setTransportCost(e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                                                        className="w-full pl-8 pr-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-blue-500/50 focus:bg-black/40 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white font-mono placeholder-zinc-600 text-base md:text-lg"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="relative">
-                                        <select
-                                            value={garmentId}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                if (val === "new_garment_trigger") {
-                                                    setIsNewGarment(true);
-                                                    setGarmentId("");
-                                                    setGarmentName("");
-                                                    setPrice(0);
-                                                    setLaborCost(0);
-                                                    setTransportCost(0);
-                                                    setCustomMaterials([]);
-                                                } else {
-                                                    handleGarmentSelect(e);
-                                                }
-                                            }}
-                                            className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-cyan-500/50 focus:bg-black/40 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all text-white appearance-none cursor-pointer text-base md:text-lg"
-                                        >
-                                            <option value="">Seleccionar prenda...</option>
-                                            {garments.map((g) => (
-                                                <option key={g.id} value={g.id}>{g.name} (${g.price})</option>
-                                            ))}
-                                            <option value="new_garment_trigger" className="text-zinc-100 font-semibold">+ Nueva Prenda (Automatizar)</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-zinc-400">
-                                                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Stock Toggle */}
-                            {!isNewGarment && stockAvailable > 0 && (
-                                <div className="space-y-2 col-span-1 md:col-span-2">
-                                    <div
-                                        onClick={() => setUseStockToggle(!useStockToggle)}
-                                        className={`cursor-pointer border rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${useStockToggle
-                                            ? 'bg-emerald-500/10 border-emerald-500/50 shadow-lg shadow-black/40'
-                                            : 'bg-black/20 border-white/5 hover:bg-white/5'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${useStockToggle ? 'bg-emerald-500 text-white' : 'bg-zinc-700 text-zinc-400'}`}>
-                                                <Package className="w-6 h-6" />
-                                            </div>
-                                            <div>
-                                                <p className={`font-bold ${useStockToggle ? 'text-white' : 'text-zinc-400'}`}>Tomar del Inventario</p>
-                                                <p className="text-xs text-zinc-500">
-                                                    Disponibles: <span className="text-white font-mono font-bold">{stockAvailable}</span> unidad(es)
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${useStockToggle ? 'bg-emerald-500' : 'bg-zinc-600'}`}>
-                                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${useStockToggle ? 'translate-x-6' : 'translate-x-0'}`} />
-                                        </div>
-                                    </div>
-                                    {useStockToggle && (
-                                        <p className="text-xs text-zinc-100 pl-2 animate-in fade-in slide-in-from-top-1">
-                                            ✓ Se descontará del stock y no se generará lista de compras.
-                                        </p>
-                                    )}
+                        {/* Prenda */}
+                        {isNewGarment ? (
+                            <div className="space-y-3">
+                                <FormInput
+                                    label="Prenda / Diseño"
+                                    required
+                                    placeholder="Nombre de la prenda"
+                                    value={garmentName}
+                                    onChange={(e) => setGarmentName(e.target.value)}
+                                    icon={<Shirt className="w-3 h-3" />}
+                                />
+                                <div className="grid grid-cols-2 gap-3">
+                                    <FormInput
+                                        label="Mano de Obra"
+                                        type="number"
+                                        step={0.01}
+                                        value={laborCost === 0 ? '' : laborCost}
+                                        onChange={(e) => setLaborCost(e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                                        icon={<DollarSign className="w-3 h-3" />}
+                                    />
+                                    <FormInput
+                                        label="Transporte"
+                                        type="number"
+                                        step={0.01}
+                                        value={transportCost === 0 ? '' : transportCost}
+                                        onChange={(e) => setTransportCost(e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                                        icon={<Truck className="w-3 h-3" />}
+                                    />
                                 </div>
-                            )}
-
-                            {/* Size */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    <Ruler className="w-4 h-4 text-zinc-100" />
-                                    Talla
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        value={size}
-                                        onChange={(e) => setSize(e.target.value)}
-                                        className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all text-white appearance-none cursor-pointer text-base md:text-lg"
-                                    >
-                                        <option value="XS">XS</option>
-                                        <option value="S">S</option>
-                                        <option value="M">M</option>
-                                        <option value="L">L</option>
-                                        <option value="XL">XL</option>
-                                        <option value="XXL">XXL</option>
-                                        <option value="Personalizado">Personalizado</option>
-                                    </select>
-                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-zinc-400">
-                                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </div>
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsNewGarment(false);
+                                        setGarmentName("");
+                                        setGarmentId("");
+                                        setLaborCost(0);
+                                        setTransportCost(0);
+                                        setCustomMaterials([]);
+                                    }}
+                                    className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    ← Seleccionar existente
+                                </button>
                             </div>
-
-                            {/* Status */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    <CheckCircle2 className="w-4 h-4 text-orange-400" />
-                                    Estado
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        value={status}
-                                        onChange={(e) => setStatus(e.target.value)}
-                                        className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-orange-500/50 focus:bg-black/40 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all text-white appearance-none cursor-pointer text-base md:text-lg"
-                                    >
-                                        <option value="Sin Comenzar">Sin Comenzar</option>
-                                        <option value="En Proceso">En Proceso</option>
-                                        <option value="En Arreglo">En Arreglo</option>
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="Entregado">Entregado</option>
-                                        <option value="Finalizado">Finalizado</option>
-                                    </select>
-                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-zinc-400">
-                                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ) : (
+                            <FormSelect
+                                label="Prenda / Diseño"
+                                icon={<Shirt className="w-3 h-3" />}
+                                placeholder="Seleccionar prenda..."
+                                value={garmentId}
+                                onChange={(e) => handleGarmentSelect(e as any)}
+                                options={garments.map((g) => ({ value: g.id || '', label: `${g.name} ($${g.price})` }))}
+                                actionOption={{
+                                    label: "Nueva (Automatizar)",
+                                    onClick: () => {
+                                        setIsNewGarment(true);
+                                        setGarmentId("");
+                                        setGarmentName("");
+                                        setPrice(0);
+                                        setLaborCost(0);
+                                        setTransportCost(0);
+                                        setCustomMaterials([]);
+                                    }
+                                }}
+                            />
+                        )}
                     </div>
 
-                    {/* Materials Card (Only for new orders) */}
+                    {/* ═══ SECCIÓN 2: TALLA, ESTADO & STOCK ═══ */}
+                    <div className="border-t border-white/5 pt-4 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormSelect
+                                label="Talla"
+                                icon={<Ruler className="w-3 h-3" />}
+                                value={size}
+                                onChange={(e) => setSize(e.target.value)}
+                                options={['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Personalizado'].map(s => ({ value: s, label: s }))}
+                            />
+                            <FormSelect
+                                label="Estado"
+                                icon={<CheckCircle2 className="w-3 h-3" />}
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                options={['Sin Comenzar', 'En Proceso', 'En Arreglo', 'Pendiente', 'Entregado', 'Finalizado'].map(s => ({ value: s, label: s }))}
+                            />
+                        </div>
+
+                        {/* Stock Toggle */}
+                        {!isNewGarment && stockAvailable > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => setUseStockToggle(!useStockToggle)}
+                                className={`w-full rounded-xl p-3.5 border transition-all duration-300 flex items-center justify-between active:scale-[0.98] ${useStockToggle
+                                    ? 'bg-white border-white'
+                                    : 'bg-zinc-900 border-white/10 hover:bg-zinc-800'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Package className={`w-5 h-5 ${useStockToggle ? 'text-black' : 'text-zinc-400'}`} />
+                                    <div className="text-left">
+                                        <p className={`text-sm font-bold ${useStockToggle ? 'text-black' : 'text-white'}`}>
+                                            Cargar desde Stock
+                                        </p>
+                                        <p className={`text-[10px] ${useStockToggle ? 'text-black/60' : 'text-zinc-500'}`}>
+                                            {stockAvailable} disponibles
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={`relative shrink-0 h-6 w-11 rounded-full transition-colors duration-200 ${useStockToggle ? 'bg-black/20' : 'bg-zinc-700'}`}>
+                                    <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-md transition-transform duration-200 ${useStockToggle ? 'translate-x-5 bg-black' : 'translate-x-0 bg-zinc-400'}`} />
+                                </div>
+                            </button>
+                        )}
+                    </div>
+
+                    {/* ═══ SECCIÓN 3: MATERIALES ═══ */}
                     {!id && (
-                        <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl md:rounded-3xl border border-white/10 p-5 md:p-8 shadow-2xl shadow-black/20">
-                            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-white/10">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                                    <Package className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <h2 className="text-lg md:text-xl font-bold text-white">Materiales Requeridos</h2>
-                                    <p className="text-xs md:text-sm text-zinc-400 mt-0.5">Automáticamente a compras</p>
-                                </div>
+                        <div className="border-t border-white/5 pt-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                                    <Package className="w-3 h-3" />
+                                    Materiales
+                                </label>
+                                <span className="text-[10px] text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded-full border border-zinc-800">Auto-Compras</span>
                             </div>
 
                             {garmentId ? (
-                                // Show garment materials
                                 selectedGarmentMaterials.length > 0 ? (
-                                    <div className="space-y-3">
+                                    <div className="space-y-1.5">
                                         {selectedGarmentMaterials.map((material, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-white/5 to-transparent border border-white/5"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                                                    <div>
-                                                        <p className="font-medium text-white">{material.name}</p>
-                                                        {material.quantity && (
-                                                            <p className="text-sm text-zinc-400">{material.quantity}</p>
-                                                        )}
+                                            <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-black border border-zinc-800/50">
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div className="w-8 h-8 shrink-0 rounded-lg bg-white/5 flex items-center justify-center">
+                                                        <Package className="w-3.5 h-3.5 text-zinc-500" />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="font-semibold text-white text-sm truncate">{material.name}</p>
+                                                        <p className="text-[10px] text-zinc-500 font-mono">{material.quantity}</p>
                                                     </div>
                                                 </div>
-                                                <p className="font-mono font-bold text-indigo-400">${material.cost.toFixed(2)}</p>
+                                                <p className="font-mono font-bold text-sm text-white shrink-0 ml-2">${material.cost.toFixed(2)}</p>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8">
-                                        <p className="text-zinc-500">Esta prenda no tiene materiales registrados</p>
+                                    <div className="text-center py-6 bg-black/20 rounded-xl border border-dashed border-zinc-800">
+                                        <Package className="w-5 h-5 text-zinc-700 mx-auto mb-1" />
+                                        <p className="text-zinc-600 text-sm">Sin materiales registrados</p>
                                     </div>
                                 )
                             ) : (
-                                // Custom materials input
-                                <div className="space-y-4">
-                                    <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
-                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                            <div className="md:col-span-5">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Nombre del material..."
-                                                    value={newMatName}
-                                                    onChange={(e) => setNewMatName(e.target.value)}
-                                                    className="w-full px-4 py-3 rounded-xl bg-zinc-950/50 border border-white/10 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none text-white placeholder-zinc-500"
-                                                />
-                                            </div>
-                                            <div className="md:col-span-3">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Cantidad"
-                                                    value={newMatQtty}
-                                                    onChange={(e) => setNewMatQtty(e.target.value)}
-                                                    className="w-full px-4 py-3 rounded-xl bg-zinc-950/50 border border-white/10 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none text-white placeholder-zinc-500"
-                                                />
-                                            </div>
-                                            <div className="md:col-span-3 relative">
-                                                <input
-                                                    type="number"
-                                                    placeholder="Costo ($)"
-                                                    value={newMatCost}
-                                                    onChange={(e) => setNewMatCost(e.target.value === '' ? '' : Number(e.target.value))}
-                                                    className="w-full px-4 py-3 rounded-xl bg-zinc-950/50 border border-white/10 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none text-white placeholder-zinc-500 font-mono pr-20"
-                                                />
-                                                {newMatCost && Number(newMatCost) > 0 && (
-                                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                                                        <BsBadge amount={Number(newMatCost)} className="text-[9px]" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="md:col-span-1">
-                                                <button
-                                                    type="button"
-                                                    onClick={addCustomMaterial}
-                                                    className="w-full h-full flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-300 shadow-lg shadow-black/40"
-                                                >
-                                                    <Plus className="w-5 h-5" />
-                                                </button>
-                                            </div>
+                                <div className="space-y-3">
+                                    <div className="bg-black/30 rounded-xl p-3.5 border border-zinc-800/50 space-y-3">
+                                        <FormInput
+                                            label="Nombre del material"
+                                            placeholder="Ej: Tela jersey"
+                                            value={newMatName}
+                                            onChange={(e) => setNewMatName(e.target.value)}
+                                            icon={<Package className="w-3 h-3" />}
+                                        />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <FormInput
+                                                label="Cantidad"
+                                                placeholder="Ej: 2 mts"
+                                                value={newMatQtty}
+                                                onChange={(e) => setNewMatQtty(e.target.value)}
+                                                icon={<Ruler className="w-3 h-3" />}
+                                            />
+                                            <FormInput
+                                                label="Costo"
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={newMatCost}
+                                                onChange={(e) => setNewMatCost(e.target.value === '' ? '' : Number(e.target.value))}
+                                                icon={<DollarSign className="w-3 h-3" />}
+                                            />
                                         </div>
+                                        <button
+                                            type="button"
+                                            onClick={addCustomMaterial}
+                                            className="w-full py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px] active:scale-[0.98]"
+                                        >
+                                            <Plus className="w-4 h-4" /> Agregar material
+                                        </button>
                                     </div>
 
                                     {customMaterials.length > 0 && (
-                                        <div className="space-y-3">
+                                        <div className="space-y-1.5">
                                             {customMaterials.map((material, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="group flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-white/5 to-transparent border border-white/5 hover:border-indigo-500/30 transition-all"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                                                        <div>
-                                                            <p className="font-medium text-white">{material.name}</p>
-                                                            <p className="text-sm text-zinc-400">{material.quantity}</p>
+                                                <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-black border border-zinc-800/50">
+                                                    <div className="flex items-center gap-3 min-w-0">
+                                                        <div className="w-8 h-8 shrink-0 rounded-lg bg-white/5 flex items-center justify-center">
+                                                            <Package className="w-3.5 h-3.5 text-zinc-500" />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="font-semibold text-white text-sm truncate">{material.name}</p>
+                                                            <p className="text-[10px] text-zinc-500 font-mono">{material.quantity}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <p className="font-mono font-bold text-indigo-400">${material.cost.toFixed(2)}</p>
+                                                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                                                        <p className="font-mono font-bold text-sm text-white">${material.cost.toFixed(2)}</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => removeCustomMaterial(index)}
-                                                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer active:scale-90"
+                                                            aria-label={`Eliminar ${material.name}`}
                                                         >
-                                                            <Trash className="w-4 h-4" />
+                                                            <Trash className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -702,141 +549,97 @@ const OrderForm = memo(function OrderForm({ id }: OrderFormProps) {
                         </div>
                     )}
 
-                    {/* Dates Card */}
-                    <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl md:rounded-3xl border border-white/10 p-5 md:p-8 shadow-2xl shadow-black/20">
-                        <div className="flex items-center gap-3 mb-5 pb-5 border-b border-white/10">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                                <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    {/* ═══ SECCIÓN 4: CRONOGRAMA ═══ */}
+                    <div className="border-t border-white/5 pt-4 space-y-3">
+                        <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                            <CalendarIcon className="w-3 h-3" /> Cronograma
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] text-zinc-600 font-semibold uppercase tracking-wider">Fecha de Cita</label>
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 z-10">
+                                        <CalendarIcon className="w-4 h-4" />
+                                    </div>
+                                    <DatePicker
+                                        selected={appointmentDate}
+                                        onChange={(date: Date | null) => setAppointmentDate(date)}
+                                        dateFormat="dd/MM/yyyy"
+                                        locale="es"
+                                        placeholderText="Seleccionar..."
+                                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-zinc-900 border border-white/10 focus:border-white/20 outline-none transition-all text-white text-sm font-semibold cursor-pointer min-h-[44px]"
+                                        wrapperClassName="w-full"
+                                    />
+                                </div>
                             </div>
-                            <h2 className="text-lg md:text-xl font-bold text-white">Fechas Importantes</h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Appointment Date */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Fecha de Cita
-                                </label>
-                                <DatePicker
-                                    selected={appointmentDate}
-                                    onChange={(date: Date | null) => setAppointmentDate(date)}
-                                    dateFormat="dd/MM/yyyy"
-                                    locale="es"
-                                    placeholderText="Seleccionar fecha..."
-                                    className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-orange-500/50 focus:bg-black/40 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all text-white placeholder-zinc-500 cursor-pointer text-base md:text-lg"
-                                    wrapperClassName="w-full"
-                                />
-                            </div>
-
-                            {/* Delivery Date */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Fecha de Entrega
-                                </label>
-                                <DatePicker
-                                    selected={deliveryDate}
-                                    onChange={(date: Date | null) => setDeliveryDate(date)}
-                                    dateFormat="dd/MM/yyyy"
-                                    locale="es"
-                                    placeholderText="Seleccionar fecha..."
-                                    className="w-full px-4 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-green-500/50 focus:bg-black/40 focus:ring-4 focus:ring-green-500/10 outline-none transition-all text-white placeholder-zinc-500 cursor-pointer text-base md:text-lg"
-                                    wrapperClassName="w-full"
-                                />
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] text-zinc-600 font-semibold uppercase tracking-wider">Fecha de Entrega</label>
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 z-10">
+                                        <CalendarIcon className="w-4 h-4" />
+                                    </div>
+                                    <DatePicker
+                                        selected={deliveryDate}
+                                        onChange={(date: Date | null) => setDeliveryDate(date)}
+                                        dateFormat="dd/MM/yyyy"
+                                        locale="es"
+                                        placeholderText="Seleccionar..."
+                                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-zinc-900 border border-white/10 focus:border-white/20 outline-none transition-all text-white text-sm font-semibold cursor-pointer min-h-[44px]"
+                                        wrapperClassName="w-full"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Payment Card */}
-                    <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl md:rounded-3xl border border-white/10 p-5 md:p-8 shadow-2xl shadow-black/20">
-                        <div className="flex items-center gap-3 mb-5 pb-5 border-b border-white/10">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                                <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                            </div>
-                            <h2 className="text-lg md:text-xl font-bold text-white">Información de Pago</h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Total Price */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Precio Total
-                                </label>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-lg">$</span>
-                                    <input
+                    {/* ═══ SECCIÓN 5: PAGO ═══ */}
+                    <div className="border-t border-white/5 pt-4">
+                        <div className="bg-black/30 rounded-xl border border-zinc-800/50 p-4 space-y-4">
+                            <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1">
+                                <DollarSign className="w-3 h-3" /> Información de Pago
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <FormInput
+                                        label="Precio Total"
                                         type="number"
-                                        step="0.01"
+                                        step={0.01}
                                         required
                                         value={price === 0 ? '' : price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        className="w-full pl-10 pr-20 md:pr-28 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-emerald-500/50 focus:bg-black/40 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-white font-mono text-base md:text-lg"
+                                        icon={<DollarSign className="w-3 h-3" />}
                                     />
                                     {Number(price) > 0 && (
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                            <BsBadge amount={Number(price)} className="text-xs" />
-                                        </div>
+                                        <BsBadge amount={Number(price)} className="text-[10px] ml-1" />
                                     )}
                                 </div>
+                                <FormInput
+                                    label="Abonado"
+                                    type="number"
+                                    step={0.01}
+                                    required
+                                    value={paidAmount === 0 ? '' : paidAmount}
+                                    onChange={(e) => setPaidAmount(e.target.value)}
+                                    icon={<DollarSign className="w-3 h-3" />}
+                                />
                             </div>
-
-                            {/* Paid Amount */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Monto Abonado
-                                </label>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-lg">$</span>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        required
-                                        value={paidAmount === 0 ? '' : paidAmount}
-                                        onChange={(e) => setPaidAmount(e.target.value)}
-                                        className="w-full pl-10 pr-20 md:pr-28 py-3 md:py-4 rounded-xl bg-black/30 border border-white/10 focus:border-emerald-500/50 focus:bg-black/40 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-white font-mono text-base md:text-lg"
-                                    />
-                                    {Number(paidAmount) > 0 && (
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                            <BsBadge amount={Number(paidAmount)} className="text-xs" />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Balance */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    Saldo Pendiente
-                                </label>
-                                <div className={`px-4 py-4 rounded-xl border-2 ${balance > 0
-                                    ? 'bg-red-500/10 border-red-500/30'
-                                    : 'bg-emerald-500/10 border-emerald-500/30'
-                                    }`}>
-                                    <p className={`text-lg font-bold font-mono ${balance > 0 ? 'text-red-400' : 'text-zinc-100'
-                                        }`}>
-                                        {balance > 0 ? `$${balance.toFixed(2)}` : 'Pagado'}
-                                    </p>
-                                </div>
+                            <div className="text-center py-2 border-t border-white/5">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Saldo Pendiente</p>
+                                <p className={`font-mono text-2xl font-bold ${balance > 0 ? 'text-emerald-300' : 'text-zinc-500'}`}>
+                                    ${balance.toFixed(2)}
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
-                        <Link
-                            href="/pedidos"
-                            className="px-6 py-3 md:py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-semibold transition-all duration-300 text-center"
-                        >
-                            Cancelar
-                        </Link>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="group px-8 py-3 md:py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:from-blue-600 hover:to-cyan-600 disabled:from-zinc-600 disabled:to-zinc-600 text-white font-bold transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 disabled:shadow-none flex justify-center items-center gap-2"
-                        >
-                            <Save className="w-5 h-5" />
-                            {loading ? "Guardando..." : id ? "Actualizar Pedido" : "Crear Pedido"}
-                        </button>
-                    </div>
+                    {/* Submit */}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-black/40 cursor-pointer min-h-[44px] active:scale-[0.98]"
+                    >
+                        {loading ? 'Guardando...' : id ? 'Actualizar Pedido' : 'Crear Pedido'}
+                    </button>
                 </form>
             </div>
         </div>

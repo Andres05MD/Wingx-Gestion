@@ -102,11 +102,11 @@ service cloud.firestore {
     }
 
     // --- Reglas para Colecciones de Datos (con ownerId) ---
-    // Aplica a: garments, clients, materials, stock, supplies, events
+    // Aplica a: garments, clients, materials, stock, supplies, events, bolsos
     match /{collectionName}/{docId} {
       
       function isKnownCollection() {
-        return collectionName in ['garments', 'clients', 'materials', 'stock', 'supplies', 'events'];
+        return collectionName in ['garments', 'clients', 'materials', 'stock', 'supplies', 'events', 'bolsos'];
       }
 
       // Leer: Dueño o Admin
@@ -122,6 +122,19 @@ service cloud.firestore {
 
       // Borrar: Dueño o Admin
       allow delete: if isKnownCollection() && (isResourceOwner() || isAdmin());
+    }
+
+    // --- Subcolecciones de Bolsos (participantes y pagos) ---
+    match /bolsos/{bolsoId}/participantes/{participanteId} {
+      allow read, write: if isAuthenticated() && (
+        get(/databases/$(database)/documents/bolsos/$(bolsoId)).data.ownerId == request.auth.uid || isAdmin()
+      );
+    }
+
+    match /bolsos/{bolsoId}/pagos/{pagoId} {
+      allow read, write: if isAuthenticated() && (
+        get(/databases/$(database)/documents/bolsos/$(bolsoId)).data.ownerId == request.auth.uid || isAdmin()
+      );
     }
   }
 }

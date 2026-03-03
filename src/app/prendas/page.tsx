@@ -1,23 +1,22 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
+import { useState, useMemo } from 'react';
 import { Plus, Search, Edit, Trash, Shirt } from 'lucide-react';
-import { getGarments, deleteGarmentFromStorage, Garment } from '@/services/storage';
+import { deleteGarmentFromStorage } from '@/services/storage';
 import Swal from 'sweetalert2';
-import { useAuth } from "@/context/AuthContext";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "@/components/BsBadge";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useGarments } from "@/context/GarmentsContext";
+import GarmentForm from "@/components/GarmentForm";
 
 export default function PrendasPage() {
     const { formatBs } = useExchangeRate();
-
-    // ✨ Usando contexto global - sin query redundante
     const { garments, loading, refreshGarments } = useGarments();
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [editingGarmentId, setEditingGarmentId] = useState<string | undefined>(undefined);
 
     async function handleDelete(id: string) {
         const result = await Swal.fire({
@@ -33,7 +32,6 @@ export default function PrendasPage() {
         if (result.isConfirmed) {
             try {
                 await deleteGarmentFromStorage(id);
-                // ✨ Refrescar desde contexto global
                 await refreshGarments();
                 Swal.fire('Eliminado!', 'La prenda ha sido eliminada.', 'success');
             } catch (error) {
@@ -42,10 +40,24 @@ export default function PrendasPage() {
         }
     }
 
-    // Debounce para optimizar búsqueda
+    const handleNew = () => {
+        setEditingGarmentId(undefined);
+        setShowForm(true);
+    };
+
+    const handleEdit = (id: string) => {
+        setEditingGarmentId(id);
+        setShowForm(true);
+    };
+
+    const handleFormSuccess = () => {
+        setShowForm(false);
+        setEditingGarmentId(undefined);
+        refreshGarments();
+    };
+
     const debouncedSearch = useDebounce(searchTerm, 300);
 
-    // useMemo para evitar recalcular filtro en cada render
     const filteredGarments = useMemo(() =>
         garments.filter(g => g.name?.toLowerCase().includes(debouncedSearch.toLowerCase())),
         [garments, debouncedSearch]
@@ -63,18 +75,17 @@ export default function PrendasPage() {
                     </h1>
                     <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Administra el catálogo de productos y precios</p>
                 </div>
-                <Link
-                    href="/prendas/nuevo"
-                    className="group bg-white text-black hover:bg-zinc-200 px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
+                <button
+                    onClick={handleNew}
+                    className="group bg-white text-black hover:bg-zinc-200 px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base cursor-pointer"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Nueva Prenda</span>
-                </Link>
+                </button>
             </div>
 
             <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 p-1 shadow-2xl shadow-black/20">
                 <div className="p-4 md:p-6 border-b border-white/10 space-y-4">
-                    {/* Search */}
                     <div className="relative max-w-md">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                         <input
@@ -107,21 +118,18 @@ export default function PrendasPage() {
                             <div className="md:hidden flex flex-col divide-y divide-white/5">
                                 {filteredGarments.map((garment) => (
                                     <div key={garment.id} className="p-4 flex flex-col gap-3 hover:bg-white/[0.02] transition-colors">
-                                        {/* Header de la Card: Nombre y Botones */}
                                         <div className="flex justify-between items-start gap-4">
                                             <div className="font-semibold text-zinc-200 text-lg leading-tight flex-1">
                                                 {garment.name}
                                             </div>
-
-                                            {/* Actions */}
                                             <div className="flex items-center gap-2 shrink-0">
-                                                <Link
-                                                    href={`/prendas/${garment.id}/editar`}
-                                                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white active:bg-blue-500/30 transition-all"
+                                                <button
+                                                    onClick={() => garment.id && handleEdit(garment.id)}
+                                                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white active:bg-blue-500/30 transition-all cursor-pointer"
                                                     title="Editar"
                                                 >
                                                     <Edit size={18} />
-                                                </Link>
+                                                </button>
                                                 <button
                                                     onClick={() => garment.id && handleDelete(garment.id)}
                                                     className="w-11 h-11 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 active:bg-red-500/30 transition-all"
@@ -131,8 +139,6 @@ export default function PrendasPage() {
                                                 </button>
                                             </div>
                                         </div>
-
-                                        {/* Footer de la Card: Precio */}
                                         <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/5">
                                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Precio Base</span>
                                             <div className="flex flex-col items-end">
@@ -171,13 +177,13 @@ export default function PrendasPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                    <Link
-                                                        href={`/prendas/${garment.id}/editar`}
-                                                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all duration-300"
+                                                    <button
+                                                        onClick={() => garment.id && handleEdit(garment.id)}
+                                                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all duration-300 cursor-pointer"
                                                         title="Editar"
                                                     >
                                                         <Edit size={18} />
-                                                    </Link>
+                                                    </button>
                                                     <button
                                                         onClick={() => garment.id && handleDelete(garment.id)}
                                                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-300 transition-all duration-300"
@@ -195,6 +201,15 @@ export default function PrendasPage() {
                     )}
                 </div>
             </div>
+
+            {/* Modal de Formulario */}
+            {showForm && (
+                <GarmentForm
+                    id={editingGarmentId}
+                    onClose={() => { setShowForm(false); setEditingGarmentId(undefined); }}
+                    onSuccess={handleFormSuccess}
+                />
+            )}
         </div>
     );
 }

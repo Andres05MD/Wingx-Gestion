@@ -6,6 +6,7 @@ import { Plus, Search, Trash, ShoppingBag, Shirt, Edit, Palette } from 'lucide-r
 import { getStoreProducts, deleteStoreProduct, StoreProduct } from '@/services/storage';
 import Swal from 'sweetalert2';
 import { useAuth } from "@/context/AuthContext";
+import NuevoProductoModal from '@/components/NuevoProductoModal';
 
 // Mapa de colores para visualización
 const COLOR_MAP: Record<string, string> = {
@@ -41,6 +42,7 @@ export default function TiendaPage() {
     const [products, setProducts] = useState<StoreProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     // Verificar permisos de acceso
     const hasStoreAccess = role === 'admin' || role === 'store';
@@ -117,13 +119,13 @@ export default function TiendaPage() {
                     </h1>
                     <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Gestión de productos visibles en la web</p>
                 </div>
-                <Link
-                    href="/tienda/nuevo"
-                    className="group bg-zinc-900 border border-zinc-800 hover:from-purple-400 hover:to-pink-400 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="group bg-zinc-900 border border-zinc-800 hover:from-purple-400 hover:to-pink-400 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base cursor-pointer"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Nuevo Producto</span>
-                </Link>
+                </button>
             </div>
 
             {/* Search */}
@@ -247,6 +249,17 @@ export default function TiendaPage() {
                     ))
                 )}
             </div>
+
+            {/* Modal */}
+            {showModal && (
+                <NuevoProductoModal
+                    onClose={() => setShowModal(false)}
+                    onSuccess={() => {
+                        setShowModal(false);
+                        loadProducts();
+                    }}
+                />
+            )}
         </div>
     );
 }

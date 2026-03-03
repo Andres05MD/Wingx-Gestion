@@ -9,6 +9,7 @@ import { GarmentsProvider } from "@/context/GarmentsContext";
 import { ClientsProvider } from "@/context/ClientsContext";
 import { MaterialsProvider } from "@/context/MaterialsContext";
 import { StockProvider } from "@/context/StockContext";
+import { BolsosProvider } from "@/context/BolsosContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -34,11 +35,13 @@ export default function RootLayout({
                 <ClientsProvider>
                   <MaterialsProvider>
                     <StockProvider>
-                      <NotificationsProvider>
-                        <ErrorBoundary>
-                          <Shell>{children}</Shell>
-                        </ErrorBoundary>
-                      </NotificationsProvider>
+                      <BolsosProvider>
+                        <NotificationsProvider>
+                          <ErrorBoundary>
+                            <Shell>{children}</Shell>
+                          </ErrorBoundary>
+                        </NotificationsProvider>
+                      </BolsosProvider>
                     </StockProvider>
                   </MaterialsProvider>
                 </ClientsProvider>

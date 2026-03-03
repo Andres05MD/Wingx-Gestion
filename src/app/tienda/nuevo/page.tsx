@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { saveStoreProduct, StoreProduct } from "@/services/storage";
 import Swal from "sweetalert2";
 import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette, Plus, X } from "lucide-react";
+import { FormInput, FormTextarea } from '@/components/ui';
 import Link from "next/link";
 import { IKContext, IKUpload } from 'imagekitio-react';
 
@@ -170,55 +171,40 @@ export default function NewProductPage() {
                         <div className="space-y-6">
 
                             {/* Name */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    <Shirt className="w-4 h-4 text-blue-400" />
-                                    Nombre del Producto
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ej. Camiseta Oversize Wingx..."
-                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500"
-                                />
-                            </div>
+                            <FormInput
+                                label="Nombre del Producto"
+                                icon={<Shirt className="w-4 h-4" />}
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Ej. Camiseta Oversize Wingx..."
+                            />
 
                             {/* Description */}
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                    <Tag className="w-4 h-4 text-zinc-100" />
-                                    Descripción
-                                </label>
-                                <textarea
-                                    required
-                                    rows={3}
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Detalles sobre la tela, ajuste, etc..."
-                                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500 resize-none"
-                                />
-                            </div>
+                            <FormTextarea
+                                label="Descripción"
+                                icon={<Tag className="w-4 h-4" />}
+                                required
+                                rows={3}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Detalles sobre la tela, ajuste, etc..."
+                            />
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Price */}
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                                        <DollarSign className="w-4 h-4 text-zinc-100" />
-                                        Precio (USD)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="0"
-                                        step="0.01"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        placeholder="50.00"
-                                        className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:border-purple-500/50 focus:bg-black/40 outline-none transition-all text-white placeholder-zinc-500 font-mono"
-                                    />
-                                </div>
+                                <FormInput
+                                    label="Precio (USD)"
+                                    icon={<DollarSign className="w-4 h-4" />}
+                                    type="number"
+                                    required
+                                    min="0"
+                                    step="0.01"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    placeholder="50.00"
+                                    className="font-mono"
+                                />
 
                                 {/* Gender Selection */}
                                 <div className="space-y-4">

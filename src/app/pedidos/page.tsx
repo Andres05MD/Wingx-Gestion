@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
 import { Plus, Search, Edit, Trash, ClipboardList, Filter, ChevronDown } from 'lucide-react';
 import { getOrders, deleteOrder, Order, updateOrder } from '@/services/storage';
 import Swal from 'sweetalert2';
@@ -9,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "@/components/BsBadge";
 import { useDebounce } from "@/hooks/useDebounce";
+import OrderForm from "@/components/OrderForm";
 
 export default function PedidosPage() {
     const { role, user, loading: authLoading } = useAuth();
@@ -17,8 +17,9 @@ export default function PedidosPage() {
     const [loading, setLoading] = useState(true);
     const [searchInput, setSearchInput] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
+    const [showForm, setShowForm] = useState(false);
+    const [editingOrderId, setEditingOrderId] = useState<string | undefined>(undefined);
 
-    // ✅ Debounce search para evitar filtrado en cada tecla
     const debouncedSearch = useDebounce(searchInput, 300);
 
     useEffect(() => {
@@ -31,12 +32,9 @@ export default function PedidosPage() {
         if (!user?.uid) return;
         setLoading(true);
         const data = await getOrders(role || undefined, user.uid);
-
-        // ✅ Crear copia antes de mutar con sort()
         const sortedData = [...data].sort((a, b) =>
             (new Date(b.createdAt || 0).getTime()) - (new Date(a.createdAt || 0).getTime())
         );
-
         setOrders(sortedData);
         setLoading(false);
     }
@@ -139,12 +137,26 @@ export default function PedidosPage() {
         }
     }
 
-    // ✅ Memoizar filtrado para evitar cálculos en cada render
+    const handleNew = () => {
+        setEditingOrderId(undefined);
+        setShowForm(true);
+    };
+
+    const handleEdit = (id: string) => {
+        setEditingOrderId(id);
+        setShowForm(true);
+    };
+
+    const handleFormSuccess = () => {
+        setShowForm(false);
+        setEditingOrderId(undefined);
+        loadOrders();
+    };
+
     const filteredOrders = useMemo(() => {
         return orders.filter(o => {
             const clientName = o.clientName || '';
             const garmentName = o.garmentName || '';
-
             const matchSearch = clientName.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
                 garmentName.toLowerCase().includes(debouncedSearch.toLowerCase());
             const matchFilter = filterStatus === 'All' || o.status === filterStatus;
@@ -156,10 +168,10 @@ export default function PedidosPage() {
         switch (status) {
             case 'Sin Comenzar': return 'bg-zinc-950 border-l-4 border-zinc-600';
             case 'Pendiente': return 'bg-yellow-950/30 border-l-4 border-yellow-600/50';
-            case 'En Proceso': return 'bg-emerald-950/30 border-l-4 border-emerald-600/50'; // User said green for process
+            case 'En Proceso': return 'bg-emerald-950/30 border-l-4 border-emerald-600/50';
             case 'En Arreglo': return 'bg-purple-950/30 border-l-4 border-purple-600/50';
-            case 'Entregado': return 'bg-red-950/30 border-l-4 border-red-600/50'; // User said red for delivered
-            case 'Finalizado': return 'bg-blue-950/30 border-l-4 border-blue-600/50'; // Backup
+            case 'Entregado': return 'bg-red-950/30 border-l-4 border-red-600/50';
+            case 'Finalizado': return 'bg-blue-950/30 border-l-4 border-blue-600/50';
             default: return 'bg-zinc-950 border-l-4 border-zinc-700';
         }
     };
@@ -188,13 +200,13 @@ export default function PedidosPage() {
                     </h1>
                     <p className="text-zinc-400 text-sm mt-1 ml-13 hidden md:block">Controla el flujo de trabajo y estados</p>
                 </div>
-                <Link
-                    href="/pedidos/nuevo"
-                    className="group bg-zinc-900 border border-zinc-800 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base"
+                <button
+                    onClick={handleNew}
+                    className="group bg-zinc-900 border border-zinc-800 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-black/40 hover:shadow-black/40 hover:scale-105 text-sm md:text-base cursor-pointer"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Nuevo Pedido</span>
-                </Link>
+                </button>
             </div>
 
             {/* Filters */}
@@ -261,9 +273,12 @@ export default function PedidosPage() {
                                             <p className="text-sm text-zinc-400 mt-1">{order.garmentName}</p>
                                         </div>
                                         <div className="flex gap-1.5 md:gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                            <Link href={`/pedidos/${order.id}/editar`} className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-blue-400 transition-all">
+                                            <button
+                                                onClick={() => order.id && handleEdit(order.id)}
+                                                className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-blue-400 transition-all cursor-pointer"
+                                            >
                                                 <Edit size={16} />
-                                            </Link>
+                                            </button>
                                             <button
                                                 onClick={() => order.id && handleDelete(order.id)}
                                                 className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-red-400 transition-all"
@@ -343,6 +358,15 @@ export default function PedidosPage() {
                     })
                 )}
             </div>
+
+            {/* Modal de Formulario */}
+            {showForm && (
+                <OrderForm
+                    id={editingOrderId}
+                    onClose={() => { setShowForm(false); setEditingOrderId(undefined); }}
+                    onSuccess={handleFormSuccess}
+                />
+            )}
         </div>
     );
 }

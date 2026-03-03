@@ -587,3 +587,170 @@ export const getRecentOrders = async (role?: string, userId?: string, maxResults
     const snapshot = await getDocs(q);
     return snapshot.docs.map(d => ({ id: d.id, ...d.data() }) as Order);
 };
+
+// ==========================================
+// Bolsos (Ciclos de Pagos Grupales)
+// ==========================================
+
+export interface Bolso {
+    id?: string;
+    nombre: string;
+    periodo: 'semanal' | 'quincenal';
+    cantidadParticipantes: number;
+    precioPrenda: number;
+    cuotaPorCliente: number;
+    prendaReferenciaId?: string;
+    prendaNombre?: string;
+    estado: 'reclutando' | 'activo' | 'finalizado';
+    fechaInicio?: string; // ISO date
+    ownerId?: string;
+    createdAt?: string;
+}
+
+export interface ParticipanteBolso {
+    id?: string;
+    clienteId?: string;
+    nombre: string;
+    turnoEntrega: number;
+    pagadoTotal: boolean;
+    prendaEntregada: boolean;
+}
+
+export interface PagoBolso {
+    id?: string;
+    participanteId: string;
+    numeroCuota: number;
+    monto: number;
+    fechaPago: string; // ISO date
+    comprobanteUrl?: string;
+}
+
+// --- Bolsos CRUD ---
+
+export const saveBolso = async (bolso: Omit<Bolso, 'id' | 'ownerId' | 'createdAt'>) => {
+    const userId = getUserId();
+    if (!userId) throw new Error("User not authenticated");
+
+    validateRequiredFields(bolso, ['nombre', 'periodo', 'cantidadParticipantes', 'precioPrenda'], 'saveBolso');
+
+    // Pre-generar el ID para que el retry sea idempotente (evita duplicados)
+    const newDocRef = doc(collection(db, "bolsos"));
+
+    return firestoreOperation(
+        () => setDoc(newDocRef, {
+            ...bolso,
+            ownerId: userId,
+            createdAt: new Date().toISOString()
+        }),
+        'saveBolso'
+    );
+};
+
+export const getBolsos = async (role?: string, userId?: string): Promise<Bolso[]> => {
+    return await getCollectionData("bolsos", role, userId) as Bolso[];
+};
+
+export const getBolsoById = async (id: string): Promise<Bolso | null> => {
+    if (!id) return null;
+    return firestoreOperation(async () => {
+        const docSnap = await getDoc(doc(db, "bolsos", id));
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() } as Bolso;
+        }
+        return null;
+    }, 'getBolsoById');
+};
+
+export const updateBolso = async (id: string, data: Partial<Bolso>) => {
+    if (!id) throw new Error("Bolso ID is required");
+    return firestoreOperation(
+        () => updateDoc(doc(db, "bolsos", id), data),
+        'updateBolso'
+    );
+};
+
+export const deleteBolso = async (id: string) => {
+    if (!id) throw new Error("Bolso ID is required");
+    return firestoreOperation(async () => {
+        // Eliminar participantes y pagos (subcolecciones)
+        const partSnap = await getDocs(collection(db, "bolsos", id, "participantes"));
+        const batch = writeBatch(db);
+        for (const p of partSnap.docs) {
+            // Eliminar pagos del participante
+            const pagosSnap = await getDocs(collection(db, "bolsos", id, "pagos"));
+            pagosSnap.docs.filter(pg => pg.data().participanteId === p.id).forEach(pg => {
+                batch.delete(doc(db, "bolsos", id, "pagos", pg.id));
+            });
+            batch.delete(doc(db, "bolsos", id, "participantes", p.id));
+        }
+        batch.delete(doc(db, "bolsos", id));
+        await batch.commit();
+    }, 'deleteBolso');
+};
+
+// --- Participantes subcolección ---
+
+export const addParticipante = async (bolsoId: string, participante: Omit<ParticipanteBolso, 'id'>) => {
+    if (!bolsoId) throw new Error("Bolso ID is required");
+
+    // Pre-generar el ID para que el retry sea idempotente (evita duplicados)
+    const newDocRef = doc(collection(db, "bolsos", bolsoId, "participantes"));
+
+    return firestoreOperation(
+        () => setDoc(newDocRef, participante),
+        'addParticipante'
+    );
+};
+
+export const getParticipantes = async (bolsoId: string): Promise<ParticipanteBolso[]> => {
+    if (!bolsoId) return [];
+    const snapshot = await getDocs(collection(db, "bolsos", bolsoId, "participantes"));
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ParticipanteBolso));
+};
+
+export const updateParticipante = async (bolsoId: string, participanteId: string, data: Partial<ParticipanteBolso>) => {
+    return firestoreOperation(
+        () => updateDoc(doc(db, "bolsos", bolsoId, "participantes", participanteId), data),
+        'updateParticipante'
+    );
+};
+
+export const deleteParticipante = async (bolsoId: string, participanteId: string) => {
+    return firestoreOperation(async () => {
+        // Eliminar pagos asociados
+        const pagosSnap = await getDocs(collection(db, "bolsos", bolsoId, "pagos"));
+        const batch = writeBatch(db);
+        pagosSnap.docs.filter(pg => pg.data().participanteId === participanteId).forEach(pg => {
+            batch.delete(doc(db, "bolsos", bolsoId, "pagos", pg.id));
+        });
+        batch.delete(doc(db, "bolsos", bolsoId, "participantes", participanteId));
+        await batch.commit();
+    }, 'deleteParticipante');
+};
+
+// --- Pagos subcolección ---
+
+export const addPago = async (bolsoId: string, pago: Omit<PagoBolso, 'id'>) => {
+    if (!bolsoId) throw new Error("Bolso ID is required");
+
+    // Pre-generar el ID para que el retry sea idempotente (evita duplicados)
+    const newDocRef = doc(collection(db, "bolsos", bolsoId, "pagos"));
+
+    return firestoreOperation(
+        () => setDoc(newDocRef, pago),
+        'addPago'
+    );
+};
+
+export const getPagos = async (bolsoId: string): Promise<PagoBolso[]> => {
+    if (!bolsoId) return [];
+    const snapshot = await getDocs(collection(db, "bolsos", bolsoId, "pagos"));
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as PagoBolso));
+};
+
+export const deletePago = async (bolsoId: string, pagoId: string) => {
+    return firestoreOperation(
+        () => deleteDoc(doc(db, "bolsos", bolsoId, "pagos", pagoId)),
+        'deletePago'
+    );
+};
