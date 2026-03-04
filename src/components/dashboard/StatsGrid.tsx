@@ -69,7 +69,7 @@ const StatsGrid = memo(function StatsGrid({ loading, realIncome, pendingPayments
 
 const StatCard = memo(function StatCard({ title, value, loading, formatValue, secondaryValue, icon: Icon, iconColor, gradient, borderColor }: any) {
     return (
-        <div className={`relative p-3 md:p-5 rounded-2xl md:rounded-3xl border border-white/10 bg-gradient-to-br ${gradient} backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${borderColor} shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20`}>
+        <div className={`relative p-3 md:p-5 rounded-2xl md:rounded-3xl border border-white/10 bg-linear-to-br ${gradient} backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${borderColor} shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20`}>
             <div className="flex items-start justify-between mb-2 md:mb-4">
                 <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 ${iconColor} shadow-inner shadow-black/20`}>
                     <Icon size={18} className="md:w-6 md:h-6" />

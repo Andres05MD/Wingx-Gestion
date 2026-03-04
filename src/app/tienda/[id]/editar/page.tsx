@@ -195,7 +195,7 @@ export default function EditProductPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6">
+        <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="mb-8 flex items-center justify-between">
@@ -218,7 +218,7 @@ export default function EditProductPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Main Info Card */}
-                    <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl shadow-black/20">
+                    <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl shadow-black/20">
                         <div className="space-y-6">
 
                             {/* Name */}

@@ -10,11 +10,13 @@ import { toast } from 'sonner';
 import GestionParticipantesModal from '@/components/bolsos/GestionParticipantesModal';
 import TableroPagosGrid from '@/components/bolsos/TableroPagosGrid';
 import CalendarioEntregas from '@/components/bolsos/CalendarioEntregas';
+import { useConfirm } from '@/context/ConfirmContext';
 
 export default function BolsoDetallePage() {
     const params = useParams();
     const router = useRouter();
     const { user } = useAuth();
+    const { confirm } = useConfirm();
     const bolsoId = params.id as string;
 
     const [bolso, setBolso] = useState<Bolso | null>(null);
@@ -49,7 +51,15 @@ export default function BolsoDetallePage() {
 
     const handleDelete = async () => {
         if (!bolso?.id) return;
-        if (window.confirm(`¿Eliminar bolso?\n\nSe eliminará "${bolso.nombre}" y todos sus datos.`)) {
+
+        const isConfirmed = await confirm({
+            title: "¿Eliminar bolso?",
+            description: `Se eliminará "${bolso.nombre}" y todos sus datos.`,
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteBolso(bolso.id);
                 router.push('/bolsos');
@@ -144,26 +154,26 @@ export default function BolsoDetallePage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-xl border border-white/10 p-4">
+                <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><DollarSign size={10} /> Precio Prenda</p>
                     <p className="font-mono text-xl font-bold text-white">${bolso.precioPrenda.toFixed(2)}</p>
                 </div>
-                <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-xl border border-white/10 p-4">
+                <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><DollarSign size={10} /> Cuota</p>
                     <p className="font-mono text-xl font-bold text-emerald-300">${bolso.cuotaPorCliente.toFixed(2)}</p>
                 </div>
-                <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-xl border border-white/10 p-4">
+                <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><Calendar size={10} /> Periodo</p>
                     <p className="text-lg font-bold text-white">{periodoLabel}</p>
                 </div>
-                <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-xl border border-white/10 p-4">
+                <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><Users size={10} /> Participantes</p>
                     <p className="text-lg font-bold text-white">{participantes.length} <span className="text-zinc-600 text-sm">/ {bolso.cantidadParticipantes}</span></p>
                 </div>
             </div>
 
             {/* Estado Selector */}
-            <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-xl border border-white/10 p-4 flex flex-col md:flex-row items-start md:items-center gap-3">
+            <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4 flex flex-col md:flex-row items-start md:items-center gap-3">
                 <div className="flex items-center gap-2">
                     <Settings size={14} className="text-zinc-500" />
                     <span className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Cambiar Estado</span>
@@ -178,7 +188,7 @@ export default function BolsoDetallePage() {
                                 onClick={() => handleStatusChange(estado)}
                                 className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${isActive
                                     ? `${s.bg} ${s.text} border ${s.border} ring-2 ring-offset-2 ring-offset-zinc-950 ring-white/10`
-                                    : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:bg-white/5 hover:text-zinc-300'
+                                    : 'bg-white/3 text-zinc-500 border border-white/5 hover:bg-white/5 hover:text-zinc-300'
                                     }`}
                             >
                                 <span className={`w-1.5 h-1.5 rounded-full ${isActive ? s.dot : 'bg-zinc-600'}`}></span>
@@ -190,7 +200,7 @@ export default function BolsoDetallePage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/5 w-fit">
+            <div className="flex gap-1 bg-white/3 p-1 rounded-xl border border-white/5 w-fit">
                 <button
                     onClick={() => setActiveTab('pagos')}
                     className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'pagos'
@@ -212,7 +222,7 @@ export default function BolsoDetallePage() {
             </div>
 
             {/* Content */}
-            <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-md rounded-2xl border border-white/10 p-4 md:p-6">
+            <div className="bg-linear-to-br from-white/5 to-white/2 backdrop-blur-md rounded-2xl border border-white/10 p-4 md:p-6">
                 {activeTab === 'pagos' ? (
                     <TableroPagosGrid
                         bolso={bolso}

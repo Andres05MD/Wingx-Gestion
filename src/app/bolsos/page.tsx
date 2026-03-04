@@ -7,10 +7,12 @@ import { useBolsos } from '@/context/BolsosContext';
 import { deleteBolso, updateBolso, Bolso } from '@/services/storage';
 import { toast } from 'sonner';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useConfirm } from '@/context/ConfirmContext';
 import CrearBolsoModal from '@/components/bolsos/CrearBolsoModal';
 
 export default function BolsosPage() {
     const { bolsos, loading, refreshBolsos } = useBolsos();
+    const { confirm } = useConfirm();
     const [searchInput, setSearchInput] = useState('');
     const [filterEstado, setFilterEstado] = useState('Todos');
     const [showCrearModal, setShowCrearModal] = useState(false);
@@ -63,7 +65,14 @@ export default function BolsosPage() {
     };
 
     const handleDelete = async (id: string, nombre: string) => {
-        if (window.confirm(`¿Eliminar bolso?\n\nSe eliminará "${nombre}" y todos sus participantes y pagos.`)) {
+        const isConfirmed = await confirm({
+            title: "¿Eliminar bolso?",
+            description: `Se eliminará "${nombre}" y todos sus participantes y pagos.`,
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteBolso(id);
                 await refreshBolsos();
@@ -113,7 +122,7 @@ export default function BolsosPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10 flex flex-col md:flex-row gap-3 md:gap-4">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10 flex flex-col md:flex-row gap-3 md:gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
@@ -163,7 +172,7 @@ export default function BolsosPage() {
                         const periodoLabel = bolso.periodo === 'semanal' ? 'Semanal' : 'Quincenal';
 
                         return (
-                            <div key={bolso.id} className="group relative bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-2xl hover:shadow-black/30 hover:-translate-y-0.5">
+                            <div key={bolso.id} className="group relative bg-linear-to-br from-white/6 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-2xl hover:shadow-black/30 hover:-translate-y-0.5">
                                 {/* Status Strip */}
                                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${estilos.strip} transition-all duration-300`}></div>
 
@@ -203,19 +212,19 @@ export default function BolsosPage() {
 
                                     {/* Stats - 2 cols on mobile, 3 on desktop */}
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-5">
-                                        <div className="bg-white/[0.04] rounded-xl p-2.5 md:p-3 border border-white/5">
+                                        <div className="bg-white/4 rounded-xl p-2.5 md:p-3 border border-white/5">
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1 mb-1">
                                                 <Users size={10} /> Participantes
                                             </p>
                                             <p className="font-mono font-bold text-white text-base md:text-lg">{bolso.cantidadParticipantes}</p>
                                         </div>
-                                        <div className="bg-white/[0.04] rounded-xl p-2.5 md:p-3 border border-white/5">
+                                        <div className="bg-white/4 rounded-xl p-2.5 md:p-3 border border-white/5">
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1 mb-1">
                                                 <DollarSign size={10} /> Cuota
                                             </p>
                                             <p className="font-mono font-bold text-emerald-300 text-base md:text-lg">${bolso.cuotaPorCliente.toFixed(2)}</p>
                                         </div>
-                                        <div className="col-span-2 md:col-span-1 bg-white/[0.04] rounded-xl p-2.5 md:p-3 border border-white/5">
+                                        <div className="col-span-2 md:col-span-1 bg-white/4 rounded-xl p-2.5 md:p-3 border border-white/5">
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1">
                                                 Precio Prenda
                                             </p>

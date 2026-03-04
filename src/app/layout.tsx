@@ -11,6 +11,7 @@ import { MaterialsProvider } from "@/context/MaterialsContext";
 import { StockProvider } from "@/context/StockContext";
 import { BolsosProvider } from "@/context/BolsosContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
+import { ConfirmProvider } from "@/context/ConfirmContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster } from "sonner";
 
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-black text-white`}>
+      <body className={`${inter.className} bg-black text-white`} suppressHydrationWarning>
         <AuthProvider>
           <ExchangeRateProvider>
             <OrdersProvider>
@@ -37,12 +38,14 @@ export default function RootLayout({
                   <MaterialsProvider>
                     <StockProvider>
                       <BolsosProvider>
-                        <NotificationsProvider>
-                          <ErrorBoundary>
-                            <Shell>{children}</Shell>
-                            <Toaster richColors position="top-right" theme="dark" />
-                          </ErrorBoundary>
-                        </NotificationsProvider>
+                        <ConfirmProvider>
+                          <NotificationsProvider>
+                            <ErrorBoundary>
+                              <Shell>{children}</Shell>
+                              <Toaster richColors position="top-right" theme="dark" />
+                            </ErrorBoundary>
+                          </NotificationsProvider>
+                        </ConfirmProvider>
                       </BolsosProvider>
                     </StockProvider>
                   </MaterialsProvider>

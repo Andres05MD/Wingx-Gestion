@@ -5,6 +5,7 @@ import { Plus, Search, Edit, Trash, Shirt } from 'lucide-react';
 import { deleteGarmentFromStorage } from '@/services/storage';
 import { toast } from 'sonner';
 import { useExchangeRate } from "@/context/ExchangeRateContext";
+import { useConfirm } from "@/context/ConfirmContext";
 import BsBadge from "@/components/BsBadge";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useGarments } from "@/context/GarmentsContext";
@@ -12,6 +13,7 @@ import GarmentForm from "@/components/GarmentForm";
 
 export default function PrendasPage() {
     const { formatBs } = useExchangeRate();
+    const { confirm } = useConfirm();
     const { garments, loading, refreshGarments } = useGarments();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +21,14 @@ export default function PrendasPage() {
     const [editingGarmentId, setEditingGarmentId] = useState<string | undefined>(undefined);
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. ¿Deseas eliminar esta prenda?")) {
+        const isConfirmed = await confirm({
+            title: "¿Estás seguro?",
+            description: "No podrás revertir esto.\n¿Deseas eliminar esta prenda?",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteGarmentFromStorage(id);
                 await refreshGarments();
@@ -74,7 +83,7 @@ export default function PrendasPage() {
                 </button>
             </div>
 
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 p-1 shadow-2xl shadow-black/20">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-3xl border border-white/10 p-1 shadow-2xl shadow-black/20">
                 <div className="p-4 md:p-6 border-b border-white/10 space-y-4">
                     <div className="relative max-w-md">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
@@ -107,7 +116,7 @@ export default function PrendasPage() {
                             {/* --- MOBILE VIEW (CARDS) --- */}
                             <div className="md:hidden flex flex-col divide-y divide-white/5">
                                 {filteredGarments.map((garment) => (
-                                    <div key={garment.id} className="p-4 flex flex-col gap-3 hover:bg-white/[0.02] transition-colors">
+                                    <div key={garment.id} className="p-4 flex flex-col gap-3 hover:bg-white/2 transition-colors">
                                         <div className="flex justify-between items-start gap-4">
                                             <div className="font-semibold text-zinc-200 text-lg leading-tight flex-1">
                                                 {garment.name}

@@ -8,11 +8,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "@/components/BsBadge";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useConfirm } from "@/context/ConfirmContext";
 import OrderForm from "@/components/OrderForm";
 
 export default function PedidosPage() {
     const { role, user, loading: authLoading } = useAuth();
     const { formatBs } = useExchangeRate();
+    const { confirm, prompt } = useConfirm();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchInput, setSearchInput] = useState('');
@@ -40,7 +42,14 @@ export default function PedidosPage() {
     }
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. El pedido será eliminado.")) {
+        const isConfirmed = await confirm({
+            title: "¿Estás seguro?",
+            description: "No podrás revertir esto.\nEl pedido será eliminado.",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteOrder(id);
                 setOrders(orders.filter(o => o.id !== id));
@@ -66,7 +75,13 @@ export default function PedidosPage() {
         if (!order.id) return;
         const balance = order.price - order.paidAmount;
 
-        const result = window.prompt(`Registrar Pago\n\nSaldo pendiente: $${balance.toFixed(2)}\nIngresa el monto a pagar:`, balance.toString());
+        const result = await prompt({
+            title: "Registrar Pago",
+            description: `Saldo pendiente: $${balance.toFixed(2)}\nIngresa el monto a pagar:`,
+            promptDefaultValue: balance.toString(),
+            confirmText: "Aceptar",
+            cancelText: "Cancelar"
+        });
 
         if (result !== null) {
             const amount = parseFloat(result);
@@ -165,7 +180,7 @@ export default function PedidosPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10 flex flex-col md:flex-row gap-3 md:gap-4">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10 flex flex-col md:flex-row gap-3 md:gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
@@ -216,7 +231,7 @@ export default function PedidosPage() {
                         const balance = (order.price || 0) - (order.paidAmount || 0);
 
                         return (
-                            <div key={order.id} className={`group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1 ${getStatusColor(order.status).replace('bg-', 'data-bg-')}`}>
+                            <div key={order.id} className={`group relative bg-linear-to-br from-white/5 to-white/1 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1 ${getStatusColor(order.status).replace('bg-', 'data-bg-')}`}>
                                 {/* Status Indicator Strip */}
                                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStatusColor(order.status).split(' ')[2].replace('border-l-4', '').replace('border-', 'bg-')}`}></div>
 

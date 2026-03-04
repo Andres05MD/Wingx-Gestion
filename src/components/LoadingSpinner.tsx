@@ -1,6 +1,6 @@
 export default function LoadingSpinner({ message = "Cargando..." }: { message?: string }) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 flex items-center justify-center">
+        <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 flex items-center justify-center">
             <div className="text-center">
                 {/* Spinner con animación suave */}
                 <div className="relative inline-flex">

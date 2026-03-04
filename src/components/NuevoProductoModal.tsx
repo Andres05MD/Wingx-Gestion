@@ -356,7 +356,7 @@ export default function NuevoProductoModal({ onClose, onSuccess }: NuevoProducto
                                 type="button"
                                 onClick={() => ikUploadRef.current?.click()}
                                 disabled={uploading}
-                                className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-xl border-2 border-dashed border-white/15 bg-white/[0.02] hover:bg-white/5 hover:border-white/25 active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-wait min-h-[100px]"
+                                className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-xl border-2 border-dashed border-white/15 bg-white/2 hover:bg-white/5 hover:border-white/25 active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-wait min-h-[100px]"
                             >
                                 {uploading ? (
                                     <>

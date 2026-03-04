@@ -265,7 +265,7 @@ const GarmentForm = memo(function GarmentForm({ id, onClose, onSuccess }: Garmen
                     </div>
 
                     {/* Resumen de Costos */}
-                    <div className="bg-linear-to-br from-white/5 to-white/[0.02] rounded-xl border border-white/10 p-4 space-y-3">
+                    <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 p-4 space-y-3">
                         <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1">
                             <Calculator className="w-3 h-3" /> Resumen de Costos
                         </label>

@@ -32,6 +32,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { toast } from 'sonner';
+import { useConfirm } from '@/context/ConfirmContext';
 
 // Tipos
 interface PagoMovilData {
@@ -98,6 +99,7 @@ export default function VerificacionPagosPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const { confirm, prompt } = useConfirm();
 
     // Escuchar órdenes pendientes en tiempo real
     useEffect(() => {
@@ -150,10 +152,13 @@ export default function VerificacionPagosPage() {
         const orderId = order.id.slice(0, 8).toUpperCase();
         const totalAmount = order.totalPrice?.toLocaleString('es-VE', { minimumFractionDigits: 2 }) || '0';
 
-        // Confirmación nativa
-        const result = window.confirm(
-            `¿Aprobar este pago?\n\nCliente: ${customerName}\nOrden: #${orderId}\nMonto: $${totalAmount}\n\n¿Deseas continuar?`
-        );
+        // Confirmación con Dialog 
+        const result = await confirm({
+            title: "¿Aprobar este pago?",
+            description: `Cliente: ${customerName}\nOrden: #${orderId}\nMonto: $${totalAmount}\n\n¿Deseas continuar?`,
+            icon: "info",
+            confirmText: "Aprobar"
+        });
 
         if (!result) return;
 
@@ -193,9 +198,13 @@ export default function VerificacionPagosPage() {
             formattedPhone = formattedPhone.replace('+', '');
 
             // Mostrar éxito y preguntar si notificar
-            const notifyResult = window.confirm(
-                "¡Pago Aprobado!\n\n¿Deseas notificar al cliente por WhatsApp?"
-            );
+            const notifyResult = await confirm({
+                title: "¡Pago Aprobado!",
+                description: "¿Deseas notificar al cliente por WhatsApp?",
+                icon: "info",
+                confirmText: "Notificar",
+                cancelText: "No Notificar"
+            });
 
             if (notifyResult) {
                 const whatsappUrl = `https://wa.me/${formattedPhone}?text=${whatsappMessage}`;
@@ -219,12 +228,23 @@ export default function VerificacionPagosPage() {
         const customerName = order.customer?.name || order.clientName || 'Cliente';
         const orderId = order.id.slice(0, 8).toUpperCase();
 
-        // Pedir motivo con prompt nativo
-        const isConfirmed = window.confirm(`¿Rechazar este pago?\n\nCliente: ${customerName}\nOrden: #${orderId}\n\nSe te pedirá un motivo opcional si aceptas.`);
+        // Pedir motivo con confirmation dialog
+        const isConfirmed = await confirm({
+            title: "¿Rechazar este pago?",
+            description: `Cliente: ${customerName}\nOrden: #${orderId}\n\nSe te pedirá un motivo opcional si aceptas.`,
+            icon: "danger",
+            confirmText: "Rechazar"
+        });
 
         if (!isConfirmed) return;
 
-        const reason = window.prompt('Motivo del rechazo (opcional):\nEj: Referencia no encontrada');
+        const reason = await prompt({
+            title: "Motivo del rechazo",
+            description: "Ej: Referencia no encontrada",
+            placeholder: "Ingresa un motivo (opcional)...",
+            confirmText: "Aceptar",
+            cancelText: "Cancelar"
+        });
 
         setProcessingId(order.id);
         try {

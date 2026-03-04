@@ -8,12 +8,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useStock } from "@/context/StockContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import { logger } from "@/lib/logger";
+import { useConfirm } from "@/context/ConfirmContext";
 import StockFormModal from "@/components/StockFormModal";
 
 export default function InventarioPage() {
     const { role, user } = useAuth();
     // ✅ Usar contexto global - Fuente única de verdad
     const { stockItems, loading, refreshStock } = useStock();
+    const { confirm } = useConfirm();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -29,7 +31,14 @@ export default function InventarioPage() {
     );
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. El item será eliminado del inventario.")) {
+        const isConfirmed = await confirm({
+            title: "¿Estás seguro?",
+            description: "No podrás revertir esto.\nEl item será eliminado del inventario.",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteStockItem(id);
                 // ✅ Refrescar contexto global
@@ -77,7 +86,7 @@ export default function InventarioPage() {
             </div>
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
@@ -106,11 +115,11 @@ export default function InventarioPage() {
                     </div>
                 ) : (
                     filteredItems.map((item) => (
-                        <div key={item.id} className="group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-5 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
+                        <div key={item.id} className="group relative bg-linear-to-br from-white/5 to-white/1 backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-5 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
                             {/* Card Header */}
                             <div className="flex justify-between items-start mb-4 gap-3">
                                 <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                                    <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 text-emerald-300 flex items-center justify-center shadow-inner shadow-black/40">
+                                    <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 text-emerald-300 flex items-center justify-center shadow-inner shadow-black/40">
                                         <Shirt size={20} className="md:w-6 md:h-6" />
                                     </div>
                                     <div className="min-w-0">

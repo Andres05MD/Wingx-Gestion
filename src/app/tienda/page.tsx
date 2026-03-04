@@ -7,6 +7,7 @@ import { getStoreProducts, deleteStoreProduct, StoreProduct } from '@/services/s
 import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import NuevoProductoModal from '@/components/NuevoProductoModal';
+import { useConfirm } from '@/context/ConfirmContext';
 
 // Mapa de colores para visualización
 const COLOR_MAP: Record<string, string> = {
@@ -43,6 +44,7 @@ export default function TiendaPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const { confirm } = useConfirm();
 
     // Verificar permisos de acceso
     const hasStoreAccess = role === 'admin' || role === 'store';
@@ -61,7 +63,14 @@ export default function TiendaPage() {
     }
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Eliminar producto?\n\nSe eliminará de la tienda pública. No podrás revertir esto.")) {
+        const isConfirmed = await confirm({
+            title: "¿Eliminar producto?",
+            description: "Se eliminará de la tienda pública. No podrás revertir esto.",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteStoreProduct(id);
                 setProducts(products.filter(p => p.id !== id));
@@ -82,7 +91,7 @@ export default function TiendaPage() {
     if (!authLoading && !hasStoreAccess) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center max-w-md shadow-lg shadow-black/10">
+                <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center max-w-md shadow-lg shadow-black/10">
                     <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                         <ShoppingBag className="w-10 h-10 text-red-400" />
                     </div>
@@ -118,7 +127,7 @@ export default function TiendaPage() {
             </div>
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
@@ -147,7 +156,7 @@ export default function TiendaPage() {
                     </div>
                 ) : (
                     filteredProducts.map((product) => (
-                        <div key={product.id} className="group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 p-5 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1 flex flex-col h-full">
+                        <div key={product.id} className="group relative bg-linear-to-br from-white/5 to-white/1 backdrop-blur-md rounded-2xl border border-white/10 p-5 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1 flex flex-col h-full">
                             <div className="relative aspect-square w-full rounded-xl bg-black/20 mb-4 overflow-hidden border border-white/5">
                                 {product.imageUrl ? (
                                     <img
@@ -176,7 +185,7 @@ export default function TiendaPage() {
                                 </div>
                             </div>
 
-                            <div className="flex-grow">
+                            <div className="grow">
                                 <div className="flex items-start justify-between gap-2 mb-2">
                                     <h3 className="font-bold text-white text-lg leading-tight group-hover:text-zinc-100 transition-colors">
                                         {product.name}

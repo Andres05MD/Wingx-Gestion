@@ -6,6 +6,7 @@ import { addParticipante, deleteParticipante, ParticipanteBolso, Bolso } from '@
 import { useClients } from '@/context/ClientsContext';
 import { FormInput, FormSelect } from '@/components/ui';
 import { toast } from 'sonner';
+import { useConfirm } from '@/context/ConfirmContext';
 
 interface GestionParticipantesModalProps {
     bolso: Bolso;
@@ -16,6 +17,7 @@ interface GestionParticipantesModalProps {
 
 export default function GestionParticipantesModal({ bolso, participantes, onClose, onUpdated }: GestionParticipantesModalProps) {
     const { clients } = useClients();
+    const { confirm } = useConfirm();
     const [modo, setModo] = useState<'seleccionar' | 'manual'>('seleccionar');
     const [nombreManual, setNombreManual] = useState('');
     const [clienteSeleccionado, setClienteSeleccionado] = useState('');
@@ -41,8 +43,10 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
         // Guard síncrono: useRef se actualiza inmediatamente, a diferencia de useState
         if (savingRef.current) return;
 
+        if (savingRef.current) return;
+
         if (espaciosDisponibles <= 0) {
-            window.alert(`Bolso lleno\n\nEste bolso ya tiene ${bolso.cantidadParticipantes} participantes.`);
+            toast.error(`Bolso lleno. Este bolso ya tiene ${bolso.cantidadParticipantes} participantes.`);
             return;
         }
 
@@ -92,7 +96,14 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
     };
 
     const handleEliminar = async (p: ParticipanteBolso) => {
-        if (window.confirm(`¿Eliminar a ${p.nombre}?\n\nSe eliminarán también sus pagos asociados.`)) {
+        const isConfirmed = await confirm({
+            title: `¿Eliminar a ${p.nombre}?`,
+            description: "Se eliminarán también sus pagos asociados.",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             if (p.id) {
                 try {
                     await deleteParticipante(bolso.id!, p.id);

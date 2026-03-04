@@ -48,7 +48,7 @@ const OrdersList = memo(function OrdersList({ loading, orders }: OrdersListProps
                         {orders.map((order, index) => {
                             const balance = (order.price || 0) - (order.paidAmount || 0);
                             return (
-                                <div key={order.id} className={`p-3 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 transition-all hover:bg-white/[0.02] group ${index !== orders.length - 1 ? 'border-b border-white/5' : ''}`}>
+                                <div key={order.id} className={`p-3 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 transition-all hover:bg-white/2 group ${index !== orders.length - 1 ? 'border-b border-white/5' : ''}`}>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-bold text-zinc-200 truncate pr-2 group-hover:text-blue-400 transition-colors">{order.clientName}</h3>

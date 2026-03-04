@@ -8,10 +8,12 @@ import { toast } from 'sonner';
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "./BsBadge";
 import { UserRole, getRoleDisplayName, getRoleBadgeClasses } from "@/services/roles";
+import { useConfirm } from '@/context/ConfirmContext';
 
 export default function AdminDashboard() {
     const { user, role } = useAuth();
     const { formatBs } = useExchangeRate();
+    const { confirm } = useConfirm();
     const [usersData, setUsersData] = useState<UserProfile[]>([]);
     const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -44,7 +46,12 @@ export default function AdminDashboard() {
     }
 
     const handleResetPassword = async (email: string) => {
-        const isConfirmed = window.confirm(`¿Se enviará un correo de recuperación de contraseña a ${email}?`);
+        const isConfirmed = await confirm({
+            title: "¿Recuperar contraseña?",
+            description: `¿Se enviará un correo de recuperación de contraseña a ${email}?`,
+            icon: "warning",
+            confirmText: "Enviar"
+        });
 
         if (isConfirmed) {
             try {

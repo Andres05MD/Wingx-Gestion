@@ -9,17 +9,26 @@ import ClientForm from '@/components/ClientForm';
 import { useAuth } from "@/context/AuthContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useClients } from "@/context/ClientsContext";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export default function ClientesPage() {
     // ✨ Usando contexto global - sin query redundante
     const { clients, loading, refreshClients } = useClients();
+    const { confirm } = useConfirm();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingClient, setEditingClient] = useState<Client | undefined>(undefined);
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. ¿Deseas eliminar este cliente?")) {
+        const isConfirmed = await confirm({
+            title: "¿Estás seguro?",
+            description: "No podrás revertir esto.\n¿Deseas eliminar este cliente?",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteClient(id);
                 // ✨ Refrescar desde contexto global
@@ -81,7 +90,7 @@ export default function ClientesPage() {
             </div>
 
             {/* Search */}
-            <div className="bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
+            <div className="bg-linear-to-br from-white/7 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 p-3 md:p-4 shadow-lg shadow-black/10">
                 <div className="relative max-w-xl">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
                     <input
@@ -110,15 +119,15 @@ export default function ClientesPage() {
                     </div>
                 ) : (
                     filteredClients.map((client) => (
-                        <div key={client.id} className="group relative bg-gradient-to-br from-white/[0.05] to-white/[0.01] backdrop-blur-md rounded-2xl border border-white/10 p-4 md:p-5 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
+                        <div key={client.id} className="group relative bg-linear-to-br from-white/5 to-white/1 backdrop-blur-md rounded-2xl border border-white/10 p-4 md:p-5 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
                             <div className="flex justify-between items-start mb-3 md:mb-4">
                                 <div className="flex items-center gap-3 md:gap-4">
-                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-lg md:text-xl shadow-inner shadow-black/40">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-lg md:text-xl shadow-inner shadow-black/40">
                                         {client.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-white text-lg group-hover:text-zinc-100 transition-colors">{client.name}</h3>
-                                        <p className="text-xs text-zinc-500 font-mono">ID: {client.id?.slice(0, 6)}...</p>
+
                                     </div>
                                 </div>
                                 <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

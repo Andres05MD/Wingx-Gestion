@@ -4,6 +4,7 @@ import { Calendar, CheckCircle2, Clock, Package } from 'lucide-react';
 import { ParticipanteBolso, Bolso, PagoBolso, updateParticipante } from '@/services/storage';
 import { addDays } from 'date-fns';
 import { toast } from 'sonner';
+import { useConfirm } from '@/context/ConfirmContext';
 
 interface CalendarioEntregasProps {
     bolso: Bolso;
@@ -13,6 +14,7 @@ interface CalendarioEntregasProps {
 }
 
 export default function CalendarioEntregas({ bolso, participantes, pagos, onEntregaActualizada }: CalendarioEntregasProps) {
+    const { confirm } = useConfirm();
     const diasPorPeriodo = bolso.periodo === 'semanal' ? 7 : 15;
     const fechaInicio = bolso.fechaInicio ? new Date(bolso.fechaInicio) : null;
 
@@ -29,11 +31,18 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
         if (!participante.id || !bolso.id) return;
 
         if (!puedeEntregar(participante.turnoEntrega)) {
-            window.alert(`Fondos insuficientes\n\nEl fondo actual ($${totalRecaudado.toFixed(2)}) no cubre el costo de fabricación para el turno #${participante.turnoEntrega} ($${(bolso.precioPrenda * participante.turnoEntrega).toFixed(2)} requeridos).`);
+            toast.error(`Fondos insuficientes. El fondo actual ($${totalRecaudado.toFixed(2)}) no cubre el costo de fabricación para el turno #${participante.turnoEntrega} ($${(bolso.precioPrenda * participante.turnoEntrega).toFixed(2)} requeridos).`);
             return;
         }
 
-        if (window.confirm(`Confirmar Entrega\n\n¿Marcar prenda como entregada a ${participante.nombre} (Turno #${participante.turnoEntrega})?`)) {
+        const isConfirmed = await confirm({
+            title: "Confirmar Entrega",
+            description: `¿Marcar prenda como entregada a ${participante.nombre} (Turno #${participante.turnoEntrega})?`,
+            icon: "info",
+            confirmText: "Entregar Prenda"
+        });
+
+        if (isConfirmed) {
             try {
                 await updateParticipante(bolso.id, participante.id, { prendaEntregada: true });
                 onEntregaActualizada();
@@ -54,7 +63,7 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
             </div>
 
             {/* Fondo actual */}
-            <div className="bg-gradient-to-r from-emerald-500/5 to-transparent rounded-xl border border-emerald-500/10 p-3 flex items-center justify-between">
+            <div className="bg-linear-to-r from-emerald-500/5 to-transparent rounded-xl border border-emerald-500/10 p-3 flex items-center justify-between">
                 <span className="text-xs text-zinc-500">Fondo acumulado</span>
                 <span className="font-mono font-bold text-emerald-300">${totalRecaudado.toFixed(2)}</span>
             </div>
@@ -92,7 +101,7 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
                             </div>
 
                             {/* Content */}
-                            <div className={`flex-1 py-2 pb-4 ${index < sorted.length - 1 ? 'border-b border-white/[0.02]' : ''}`}>
+                            <div className={`flex-1 py-2 pb-4 ${index < sorted.length - 1 ? 'border-b border-white/2' : ''}`}>
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
                                         <p className="text-sm font-semibold text-white">{p.nombre}</p>
@@ -117,7 +126,7 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
                                             disabled={!fondoSuficiente}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 min-h-[36px] ${fondoSuficiente
                                                 ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/40'
-                                                : 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
+                                                : 'bg-white/3 text-zinc-600 border border-white/5 cursor-not-allowed'
                                                 }`}
                                             title={!fondoSuficiente ? 'Fondos insuficientes para fabricar esta unidad' : 'Marcar como entregada'}
                                         >

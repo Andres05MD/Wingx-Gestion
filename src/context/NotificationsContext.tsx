@@ -5,6 +5,7 @@ import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'fireba
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { useConfirm } from '@/context/ConfirmContext';
 
 interface PendingOrder {
     id: string;
@@ -46,6 +47,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const hasRequestedPermission = useRef(false);
     const { role, user } = useAuth();
+    const { confirm } = useConfirm();
 
     // Solicitar permisos de notificación
     const requestPermission = useCallback(async () => {
@@ -53,11 +55,15 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         if (Notification.permission === 'granted') return;
         if (Notification.permission === 'denied') return;
 
-        const result = window.confirm(
-            "🔔 Activar Notificaciones\n\nRecibe alertas instantáneas cuando llegue un nuevo pedido desde la tienda.\nEsto te permitirá atender pedidos más rápido.\n\n¿Deseas activar las notificaciones?"
-        );
+        const isConfirmed = await confirm({
+            title: "🔔 Activar Notificaciones",
+            description: "Recibe alertas y notificaciones instantáneas cuando llegue un nuevo pedido desde la tienda web. Esto te permitirá atender pedidos de forma más rápida.",
+            icon: "info",
+            confirmText: "Activar",
+            cancelText: "En otro momento"
+        });
 
-        if (result) {
+        if (isConfirmed) {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 toast.success('¡Listo! Recibirás notificaciones de nuevos pedidos.', {
@@ -65,7 +71,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
                 });
             }
         }
-    }, []);
+    }, [confirm]);
 
     // Solicitar permiso al montar si es admin o store
     useEffect(() => {

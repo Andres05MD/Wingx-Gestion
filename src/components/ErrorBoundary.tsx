@@ -42,10 +42,10 @@ export class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-6">
+                <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-6">
                     <div className="max-w-md w-full">
                         {/* Error Card */}
-                        <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-xl rounded-3xl border border-red-500/20 p-8 shadow-2xl">
+                        <div className="bg-linear-to-br from-red-500/10 to-orange-500/10 backdrop-blur-xl rounded-3xl border border-red-500/20 p-8 shadow-2xl">
                             {/* Icon */}
                             <div className="flex justify-center mb-6">
                                 <div className="w-20 h-20 rounded-full bg-red-500/20 border-4 border-red-500/30 flex items-center justify-center">

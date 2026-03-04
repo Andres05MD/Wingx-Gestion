@@ -8,10 +8,12 @@ import { useExchangeRate } from "@/context/ExchangeRateContext";
 import { useAuth } from "@/context/AuthContext";
 import BsBadge from "@/components/BsBadge";
 import MaterialFormModal from "@/components/MaterialFormModal";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export default function MaterialesPage() {
     const { formatBs } = useExchangeRate();
     const { role, user, loading: authLoading } = useAuth();
+    const { confirm } = useConfirm();
     const [materials, setMaterials] = useState<Material[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -40,7 +42,14 @@ export default function MaterialesPage() {
 
 
     async function handleDelete(id: string) {
-        if (window.confirm("¿Estás seguro?\n\nSe eliminará de la lista")) {
+        const isConfirmed = await confirm({
+            title: "¿Estás seguro?",
+            description: "Se eliminará de la lista",
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 await deleteMaterial(id);
                 setMaterials(materials.filter(m => m.id !== id));
@@ -52,7 +61,14 @@ export default function MaterialesPage() {
     }
 
     async function handleDeletePurchased() {
-        if (window.confirm(`¿Eliminar todos los comprados?\n\nSe eliminarán ${purchasedCount} materiales de la lista.`)) {
+        const isConfirmed = await confirm({
+            title: "¿Eliminar todos los comprados?",
+            description: `Se eliminarán ${purchasedCount} materiales de la lista.`,
+            icon: "danger",
+            confirmText: "Eliminar"
+        });
+
+        if (isConfirmed) {
             try {
                 setLoading(true);
                 const toDelete = materials.filter(m => m.purchased);
@@ -95,7 +111,14 @@ export default function MaterialesPage() {
     }
 
     async function addToSupplies(material: Material) {
-        if (window.confirm(`¿Agregar al Inventario de Insumos?\n\n¿Quieres guardar "${material.name}" en tu stock de insumos para usarlo en futuros pedidos?`)) {
+        const isConfirmed = await confirm({
+            title: "¿Agregar al Inventario de Insumos?",
+            description: `¿Quieres guardar "${material.name}" en tu stock de insumos para usarlo en futuros pedidos?`,
+            icon: "info",
+            confirmText: "Agregar"
+        });
+
+        if (isConfirmed) {
             try {
                 // Try to parse quantity from string like "2 metros" -> 2
                 const qtyString = material.quantity ? material.quantity.toString() : "1";
@@ -251,7 +274,7 @@ export default function MaterialesPage() {
                             </h3>
                             <div className="space-y-3">
                                 {groupMaterials.map((material) => (
-                                    <div key={material.id} className={`group relative flex items-center justify-between p-4 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-300 ${material.purchased ? 'bg-black/30 border-white/5 opacity-60' : 'bg-gradient-to-br from-white/[0.05] to-white/[0.01] border-white/10 backdrop-blur-md hover:border-white/20 hover:shadow-lg hover:shadow-black/10'}`}>
+                                    <div key={material.id} className={`group relative flex items-center justify-between p-4 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-300 ${material.purchased ? 'bg-black/30 border-white/5 opacity-60' : 'bg-linear-to-br from-white/5 to-white/1 border-white/10 backdrop-blur-md hover:border-white/20 hover:shadow-lg hover:shadow-black/10'}`}>
                                         <div className="flex items-center gap-3 md:gap-5">
                                             <button
                                                 onClick={() => togglePurchased(material)}
