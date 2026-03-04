@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Plus, Search, Edit, Trash, ClipboardList, Filter, ChevronDown } from 'lucide-react';
 import { getOrders, deleteOrder, Order, updateOrder } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "@/components/BsBadge";
@@ -40,24 +40,13 @@ export default function PedidosPage() {
     }
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            text: "No podrás revertir esto",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. El pedido será eliminado.")) {
             try {
                 await deleteOrder(id);
-                const newOrders = orders.filter(o => o.id !== id);
-                setOrders(newOrders);
-                Swal.fire('Eliminado!', 'El pedido ha sido eliminado.', 'success');
+                setOrders(orders.filter(o => o.id !== id));
+                toast.success('El pedido ha sido eliminado.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar el pedido.');
             }
         }
     }
@@ -65,20 +54,11 @@ export default function PedidosPage() {
     async function handleStatusChange(id: string, newStatus: string) {
         try {
             await updateOrder(id, { status: newStatus });
-            const updatedOrders = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
-            setOrders(updatedOrders);
-            const toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            toast.fire({
-                icon: 'success',
-                title: 'Estado actualizado'
-            });
+            setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+            toast.success('Estado actualizado');
         } catch (e) {
             console.error(e);
+            toast.error('No se pudo actualizar el estado');
         }
     }
 
@@ -86,53 +66,28 @@ export default function PedidosPage() {
         if (!order.id) return;
         const balance = order.price - order.paidAmount;
 
-        const result = await Swal.fire({
-            title: 'Registrar Pago',
-            text: `Saldo pendiente: $${balance.toFixed(2)}`,
-            input: 'number',
-            inputLabel: 'Monto a pagar',
-            inputValue: balance,
-            inputAttributes: {
-                min: '0.01',
-                max: balance.toString(),
-                step: '0.01'
-            },
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Registrar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: (value) => {
-                const amount = parseFloat(value);
-                if (amount <= 0) {
-                    Swal.showValidationMessage('El monto debe ser mayor a 0');
-                    return false;
-                }
-                if (amount > balance) {
-                    Swal.showValidationMessage(`El monto no puede exceder el saldo ($${balance.toFixed(2)})`);
-                    return false;
-                }
-                return amount;
-            }
-        });
+        const result = window.prompt(`Registrar Pago\n\nSaldo pendiente: $${balance.toFixed(2)}\nIngresa el monto a pagar:`, balance.toString());
 
-        if (result.isConfirmed && result.value) {
-            const paymentAmount = parseFloat(result.value);
-            const newPaidAmount = (order.paidAmount || 0) + paymentAmount;
+        if (result !== null) {
+            const amount = parseFloat(result);
+
+            if (isNaN(amount) || amount <= 0) {
+                toast.error('El monto debe ser numérico y mayor a 0');
+                return;
+            }
+            if (amount > balance) {
+                toast.error(`El monto no puede exceder el saldo ($${balance.toFixed(2)})`);
+                return;
+            }
+
+            const newPaidAmount = (order.paidAmount || 0) + amount;
 
             try {
                 await updateOrder(order.id, { paidAmount: newPaidAmount });
-                const updatedOrders = orders.map(o => o.id === order.id ? { ...o, paidAmount: newPaidAmount } : o);
-                setOrders(updatedOrders);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: `Pago de $${paymentAmount.toFixed(2)} registrado`,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
+                setOrders(orders.map(o => o.id === order.id ? { ...o, paidAmount: newPaidAmount } : o));
+                toast.success(`Pago de $${amount.toFixed(2)} registrado`);
             } catch (e) {
-                Swal.fire('Error', 'No se pudo actualizar el pago', 'error');
+                toast.error('No se pudo actualizar el pago');
             }
         }
     }

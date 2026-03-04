@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Plus, Search, Edit, Trash, Users, Phone, FileText } from 'lucide-react';
 import { getClients, deleteClient, Client } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import ClientForm from '@/components/ClientForm';
 import { useAuth } from "@/context/AuthContext";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -19,24 +19,14 @@ export default function ClientesPage() {
     const [editingClient, setEditingClient] = useState<Client | undefined>(undefined);
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            text: "No podrás revertir esto",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. ¿Deseas eliminar este cliente?")) {
             try {
                 await deleteClient(id);
                 // ✨ Refrescar desde contexto global
                 await refreshClients();
-                Swal.fire('Eliminado!', 'El cliente ha sido eliminado.', 'success');
+                toast.success('El cliente ha sido eliminado.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar el cliente.');
             }
         }
     }

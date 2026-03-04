@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, Trash, Package, Shirt } from 'lucide-react';
 import { deleteStockItem, StockItem, updateStockItem } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import { useStock } from "@/context/StockContext";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -29,25 +29,15 @@ export default function InventarioPage() {
     );
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            text: "No podrás revertir esto",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. El item será eliminado del inventario.")) {
             try {
                 await deleteStockItem(id);
                 // ✅ Refrescar contexto global
                 await refreshStock();
-                Swal.fire('Eliminado!', 'Item eliminado del inventario.', 'success');
+                toast.success('Item eliminado del inventario.');
             } catch (error) {
                 logger.error("Error deleting stock item", error as Error, { component: 'InventarioPage' });
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar el item del inventario.');
             }
         }
     }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo } from "react";
 import { Order, Garment, GarmentMaterial, saveOrder, updateOrder, getOrder, saveMaterial, getMaterials, saveGarment, updateStockByGarmentId, batchSaveMaterials } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { Plus, Trash, X, DollarSign, User, Shirt, Ruler, Package, CheckCircle2, Truck, Calendar as CalendarIcon } from "lucide-react";
 import { FormInput, FormSelect } from "@/components/ui";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
@@ -91,7 +91,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
             setAppointmentDate(parseDate(order.appointmentDate));
             setDeliveryDate(parseDate(order.deliveryDate));
         } else {
-            Swal.fire("Error", "No se encontró el pedido", "error");
+            toast.error("No se encontró el pedido");
             onClose();
         }
         setLoading(false);
@@ -137,7 +137,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
 
     const addCustomMaterial = () => {
         if (!newMatName || !newMatQtty) {
-            Swal.fire("Atención", "Nombre y Cantidad requeridos", "warning");
+            toast.warning("Nombre y Cantidad requeridos");
             return;
         }
         const cost = typeof newMatCost === 'number' ? newMatCost : parseFloat(newMatCost) || 0;
@@ -181,11 +181,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
         try {
             if (id) {
                 await updateOrder(id, orderData);
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: 'Pedido actualizado', showConfirmButton: false, timer: 2500,
-                    background: '#18181b', color: '#fff',
-                });
+                toast.success('Pedido actualizado');
             } else {
                 if (isNewGarment) {
                     const newGarment: any = {
@@ -205,9 +201,9 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
                     const success = await updateStockByGarmentId(garmentId, -1, user.uid);
                     if (success) {
                         orderData.status = "Entregado";
-                        Swal.fire({ title: 'Stock Actualizado', text: 'Se descontó 1 unidad del inventario', icon: 'info', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+                        toast.info('Se descontó 1 unidad del inventario', { title: 'Stock Actualizado' });
                     } else {
-                        Swal.fire("Advertencia", "No se pudo descontar del stock", "warning");
+                        toast.warning("No se pudo descontar del stock");
                     }
                 }
 
@@ -220,16 +216,12 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
                     }
                 }
 
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: 'Pedido creado exitosamente', showConfirmButton: false, timer: 2500,
-                    background: '#18181b', color: '#fff',
-                });
+                toast.success('Pedido creado exitosamente');
             }
             onSuccess();
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "No se pudo guardar", "error");
+            toast.error("No se pudo guardar");
         } finally {
             setLoading(false);
         }
@@ -262,11 +254,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
             }
         } catch (e) {
             console.error("Error saving materials:", e);
-            Swal.fire({
-                icon: 'warning', title: 'Advertencia',
-                text: 'No se pudieron agregar algunos materiales a la lista',
-                toast: true, position: 'top-end', timer: 3000, showConfirmButton: false
-            });
+            toast.warning('No se pudieron agregar algunos materiales a la lista', { title: 'Advertencia' });
         }
     }
 

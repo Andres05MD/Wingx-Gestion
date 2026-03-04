@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Plus, Search, Filter, Wallet, Trash2, Users, Calendar, DollarSign, ChevronRight } from 'lucide-react';
 import { useBolsos } from '@/context/BolsosContext';
 import { deleteBolso, updateBolso, Bolso } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useDebounce } from '@/hooks/useDebounce';
 import CrearBolsoModal from '@/components/bolsos/CrearBolsoModal';
 
@@ -63,35 +63,13 @@ export default function BolsosPage() {
     };
 
     const handleDelete = async (id: string, nombre: string) => {
-        const result = await Swal.fire({
-            title: '¿Eliminar bolso?',
-            html: `Se eliminará "<b>${nombre}</b>" y todos sus participantes y pagos.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#3f3f46',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            background: '#18181b',
-            color: '#fff',
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm(`¿Eliminar bolso?\n\nSe eliminará "${nombre}" y todos sus participantes y pagos.`)) {
             try {
                 await deleteBolso(id);
                 await refreshBolsos();
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Bolso eliminado',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    background: '#18181b',
-                    color: '#fff',
-                });
+                toast.success('Bolso eliminado');
             } catch {
-                Swal.fire('Error', 'No se pudo eliminar el bolso.', 'error');
+                toast.error('No se pudo eliminar el bolso.');
             }
         }
     };
@@ -101,18 +79,9 @@ export default function BolsosPage() {
         try {
             await updateBolso(bolso.id, { estado: newEstado });
             await refreshBolsos();
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: `Estado → ${newEstado.charAt(0).toUpperCase() + newEstado.slice(1)}`,
-                showConfirmButton: false,
-                timer: 2000,
-                background: '#18181b',
-                color: '#fff',
-            });
+            toast.success(`Estado → ${newEstado.charAt(0).toUpperCase() + newEstado.slice(1)}`);
         } catch {
-            Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
+            toast.error('No se pudo actualizar el estado.');
         }
     };
 

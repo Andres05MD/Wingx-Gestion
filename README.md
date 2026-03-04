@@ -11,36 +11,40 @@ Wingx es una aplicación web moderna y robusta diseñada para transformar la ges
 ## 🚀 Características Principales
 
 ### � Experiencia de Usuario (UX/UI)
-*   **Diseño Premium**: Interfaz moderna con efectos "Glassmorphism", animaciones suaves y una paleta de colores cuidada.
-*   **Responsividad Total**: Optimizado para funcionar perfectamente en móviles, tablets y escritorios.
-*   **Modo Oscuro/Claro**: Adaptable a las preferencias del usuario.
+
+* **Diseño Premium**: Interfaz moderna con efectos "Glassmorphism", animaciones suaves y una paleta de colores cuidada.
+* **Responsividad Total**: Optimizado para funcionar perfectamente en móviles, tablets y escritorios.
+* **Modo Oscuro/Claro**: Adaptable a las preferencias del usuario.
 
 ### 🏭 Gestión Integral del Taller
-*   **Gestión de Pedidos**: Ciclo de vida completo (Sin comenzar, Pendiente, En proceso, Entregado) con control visual de estados.
-*   **Catálogo de Prendas**: Definición detallada de productos, incluyendo cálculo de costos, materiales y precios sugeridos.
-*   **Inventario (Stock)**: Control en tiempo real de productos terminados disponibles para entrega inmediata.
-*   **Gestión de Materiales y Compras**: Listas automáticas de insumos necesarios para la producción.
-*   **Base de Datos de Clientes**: Historial de pedidos, información de contacto y métricas por cliente.
-*   **Agenda Interactiva**: Calendario visual para organizar entregas y plazos de producción.
+
+* **Gestión de Pedidos**: Ciclo de vida completo (Sin comenzar, Pendiente, En proceso, Entregado) con control visual de estados.
+* **Catálogo de Prendas**: Definición detallada de productos, incluyendo cálculo de costos, materiales y precios sugeridos.
+* **Inventario (Stock)**: Control en tiempo real de productos terminados disponibles para entrega inmediata.
+* **Gestión de Materiales y Compras**: Listas automáticas de insumos necesarios para la producción.
+* **Base de Datos de Clientes**: Historial de pedidos, información de contacto y métricas por cliente.
+* **Agenda Interactiva**: Calendario visual para organizar entregas y plazos de producción.
 
 ### � Seguridad y Multiusuario
-*   **Autenticación Robusta**: Sistema de login seguro.
-*   **Aislamiento de Datos**: Arquitectura diseñada para que cada taller ("Owner") gestione sus datos de forma privada e independiente.
-*   **Roles y Permisos**: Distinción clara entre usuarios estándar y administradores.
+
+* **Autenticación Robusta**: Sistema de login seguro.
+* **Aislamiento de Datos**: Arquitectura diseñada para que cada taller ("Owner") gestione sus datos de forma privada e independiente.
+* **Roles y Permisos**: Distinción clara entre usuarios estándar y administradores.
 
 ### 💰 Finanzas y Administración
-*   **Tasa de Cambio Global**: Widget inteligente para conversión de precios (Bs/USD) en tiempo real en toda la app.
-*   **Dashboard Administrativo**: Visión de pájaro con estadísticas clave, usuarios activos y métricas de rendimiento.
-*   **Reportes**: Generación de resúmenes de actividad.
+
+* **Tasa de Cambio Global**: Widget inteligente para conversión de precios (Bs/USD) en tiempo real en toda la app.
+* **Dashboard Administrativo**: Visión de pájaro con estadísticas clave, usuarios activos y métricas de rendimiento.
+* **Reportes**: Generación de resúmenes de actividad.
 
 ## 🛠️ Stack Tecnológico
 
-*   **Core**: [Next.js 15+](https://nextjs.org/) (App Router), React 19.
-*   **Lenguaje**: TypeScript para un código tipado y seguro.
-*   **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/) con enfoque en diseño utility-first.
-*   **Backend & DB**: [Firebase](https://firebase.google.com/) (Firestore, Authentication, Storage).
-*   **UI Components**: Iconos por [Lucide React](https://lucide.dev/), notificaciones con [SweetAlert2](https://sweetalert2.github.io/).
-*   **Utilidades**: [Date-fns](https://date-fns.org/) para manipulación de fechas.
+* **Core**: [Next.js 15+](https://nextjs.org/) (App Router), React 19.
+* **Lenguaje**: TypeScript para un código tipado y seguro.
+* **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/) con enfoque en diseño utility-first.
+* **Backend & DB**: [Firebase](https://firebase.google.com/) (Firestore, Authentication, Storage).
+* **UI Components**: Iconos por [Lucide React](https://lucide.dev/), notificaciones con [Sonner](https://sonner.emilkowal.ski/).
+* **Utilidades**: [Date-fns](https://date-fns.org/) para manipulación de fechas.
 
 ## 📂 Estructura del Proyecto
 
@@ -68,19 +72,22 @@ Wingx es una aplicación web moderna y robusta diseñada para transformar la ges
 
 ## 🏁 Instalación y configuración
 
-1.  **Clonar el repositorio**
+1. **Clonar el repositorio**
+
     ```bash
     git clone https://github.com/tu-usuario/wingx.git
     cd wingx
     ```
 
-2.  **Instalar dependencias**
+2. **Instalar dependencias**
+
     ```bash
     npm install
     ```
 
-3.  **Configurar Variables de Entorno**
+3. **Configurar Variables de Entorno**
     Crea un archivo `.env.local` en la raíz del proyecto con tus credenciales de Firebase:
+
     ```env
     NEXT_PUBLIC_FIREBASE_API_KEY=...
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
@@ -90,12 +97,13 @@ Wingx es una aplicación web moderna y robusta diseñada para transformar la ges
     NEXT_PUBLIC_FIREBASE_APP_ID=...
     ```
 
-4.  **Ejecutar el servidor de desarrollo**
+4. **Ejecutar el servidor de desarrollo**
+
     ```bash
     npm run dev
     ```
 
-5.  **Abrir en el navegador**
+5. **Abrir en el navegador**
     Visita [http://localhost:3000](http://localhost:3000).
 
 ## 🚢 Despliegue

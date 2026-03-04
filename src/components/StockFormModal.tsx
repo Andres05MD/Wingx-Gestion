@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { saveStockItem, StockItem } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { X, Package, Palette, Ruler, Hash } from "lucide-react";
 import { useGarments } from "@/context/GarmentsContext";
 import { FormInput, FormSelect } from "@/components/ui";
@@ -37,15 +37,11 @@ export default function StockFormModal({ onClose, onSuccess }: StockFormModalPro
 
         try {
             await saveStockItem(itemData);
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Item agregado al inventario', showConfirmButton: false, timer: 2500,
-                background: '#18181b', color: '#fff',
-            });
+            toast.success('Item agregado al inventario');
             onSuccess();
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "No se pudo guardar", "error");
+            toast.error("No se pudo guardar");
         } finally {
             setLoading(false);
         }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Trash, LayoutGrid, List } from 'lucide-react';
 import { getEvents, saveEvent, deleteEvent, CalendarEvent } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useOrders } from '@/context/OrdersContext';
 import { logger } from "@/lib/logger";
 
@@ -120,7 +120,7 @@ export default function AgendaPage() {
             setNewEventTitle("");
             setShowModal(false);
             loadStoredEvents();
-            Swal.fire({ title: 'Evento guardado', icon: 'success', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' });
+            toast.success('Evento guardado');
         } catch (error) {
             logger.error("Error saving event", error as Error, { component: 'AgendaPage' });
         }

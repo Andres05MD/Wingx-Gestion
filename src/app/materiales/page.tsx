@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Search, Trash, ShoppingCart, Check, X, DollarSign, Clock } from 'lucide-react';
 import { getMaterials, updateMaterial, deleteMaterial, Material, saveSupply } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import { useAuth } from "@/context/AuthContext";
 import BsBadge from "@/components/BsBadge";
@@ -40,39 +40,19 @@ export default function MaterialesPage() {
 
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            text: "Se eliminará de la lista",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Estás seguro?\n\nSe eliminará de la lista")) {
             try {
                 await deleteMaterial(id);
                 setMaterials(materials.filter(m => m.id !== id));
-                Swal.fire('Eliminado!', 'El material ha sido eliminado.', 'success');
+                toast.success('El material ha sido eliminado.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar.');
             }
         }
     }
 
     async function handleDeletePurchased() {
-        const result = await Swal.fire({
-            title: '¿Eliminar todos los comprados?',
-            text: `Se eliminarán ${purchasedCount} materiales de la lista.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar todos'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm(`¿Eliminar todos los comprados?\n\nSe eliminarán ${purchasedCount} materiales de la lista.`)) {
             try {
                 setLoading(true);
                 const toDelete = materials.filter(m => m.purchased);
@@ -81,9 +61,9 @@ export default function MaterialesPage() {
                 // Refresh list locally
                 setMaterials(materials.filter(m => !m.purchased));
 
-                Swal.fire('Eliminados!', 'La lista se ha limpiado.', 'success');
+                toast.success('La lista se ha limpiado.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudieron eliminar algunos elementos.', 'error');
+                toast.error('No se pudieron eliminar algunos elementos.');
             } finally {
                 setLoading(false);
             }
@@ -115,18 +95,7 @@ export default function MaterialesPage() {
     }
 
     async function addToSupplies(material: Material) {
-        const result = await Swal.fire({
-            title: '¿Agregar al Inventario de Insumos?',
-            text: `¿Quieres guardar "${material.name}" en tu stock de insumos para usarlo en futuros pedidos?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, guardar en insumos',
-            cancelButtonText: 'No, solo marcar comprado',
-            confirmButtonColor: '#10b981',
-            cancelButtonColor: '#64748b'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm(`¿Agregar al Inventario de Insumos?\n\n¿Quieres guardar "${material.name}" en tu stock de insumos para usarlo en futuros pedidos?`)) {
             try {
                 // Try to parse quantity from string like "2 metros" -> 2
                 const qtyString = material.quantity ? material.quantity.toString() : "1";
@@ -139,18 +108,10 @@ export default function MaterialesPage() {
                     unit: qtyString.replace(/[\d.]/g, '').trim() || 'unidad',
                 });
 
-                Swal.fire({
-                    title: '¡Guardado!',
-                    text: 'El insumo ha sido añadido a tu inventario.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'top-end'
-                });
+                toast.success('El insumo ha sido añadido a tu inventario.');
             } catch (error) {
                 console.error("Error saving supply:", error);
-                Swal.fire('Error', 'No se pudo guardar en insumos', 'error');
+                toast.error('No se pudo guardar en insumos');
             }
         }
     }

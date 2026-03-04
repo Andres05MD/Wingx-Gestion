@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus, Search, Trash, ShoppingBag, Shirt, Edit, Palette } from 'lucide-react';
 import { getStoreProducts, deleteStoreProduct, StoreProduct } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import NuevoProductoModal from '@/components/NuevoProductoModal';
 
@@ -61,25 +61,14 @@ export default function TiendaPage() {
     }
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Eliminar producto?',
-            text: "Se eliminará de la tienda pública. No podrás revertir esto.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Eliminar producto?\n\nSe eliminará de la tienda pública. No podrás revertir esto.")) {
             try {
                 await deleteStoreProduct(id);
                 setProducts(products.filter(p => p.id !== id));
-                Swal.fire('Eliminado', 'Producto retirado de la tienda.', 'success');
+                toast.success('Producto retirado de la tienda.');
             } catch (error) {
                 console.error(error);
-                Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+                toast.error('No se pudo eliminar el producto.');
             }
         }
     }

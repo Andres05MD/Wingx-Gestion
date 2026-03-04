@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getStoreProductById, updateStoreProduct, StoreProduct } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { IKContext, IKUpload } from 'imagekitio-react';
@@ -106,12 +106,12 @@ export default function EditProductPage() {
                 setGender(product.gender || 'Unisex');
                 setFeatured(product.featured || false);
             } else {
-                Swal.fire("Error", "Producto no encontrado", "error");
+                toast.error("Producto no encontrado");
                 router.push("/tienda");
             }
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "Error al cargar producto", "error");
+            toast.error("Error al cargar producto");
         } finally {
             setFetching(false);
         }
@@ -176,11 +176,11 @@ export default function EditProductPage() {
 
         try {
             await updateStoreProduct(id, productData);
-            Swal.fire("¡Éxito!", "Producto actualizado correctamente", "success");
+            toast.success("Producto actualizado correctamente");
             router.push("/tienda");
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "No se pudo actualizar", "error");
+            toast.error("No se pudo actualizar el producto");
         } finally {
             setLoading(false);
         }
@@ -412,18 +412,11 @@ export default function EditProductPage() {
                                                 // Set first image as main automatically if none set
                                                 if (!imageUrl) setImageUrl(res.url);
 
-                                                Swal.fire({
-                                                    toast: true,
-                                                    icon: 'success',
-                                                    title: 'Imagen agregada',
-                                                    position: 'top-end',
-                                                    showConfirmButton: false,
-                                                    timer: 2000
-                                                });
+                                                toast.success('Imagen agregada');
                                             }}
                                             onError={(err: any) => {
                                                 console.error("Upload error", err);
-                                                Swal.fire("Error", "No se pudo subir la imagen", "error");
+                                                toast.error("No se pudo subir la imagen");
                                             }}
                                             className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-zinc-100 hover:file:bg-purple-500/20 transition-all cursor-pointer"
                                         />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo } from "react";
 import { Garment, GarmentMaterial, saveGarment, updateGarment, getGarmentById } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { Plus, Trash, X, DollarSign, Package, Truck, ShoppingBag, Calculator } from "lucide-react";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "./BsBadge";
@@ -46,7 +46,7 @@ const GarmentForm = memo(function GarmentForm({ id, onClose, onSuccess }: Garmen
             }
         } catch (error) {
             console.error("Error loading garment:", error);
-            Swal.fire("Error", "No se pudo cargar la prenda", "error");
+            toast.error("No se pudo cargar la prenda");
         } finally {
             setLoading(false);
         }
@@ -62,7 +62,7 @@ const GarmentForm = memo(function GarmentForm({ id, onClose, onSuccess }: Garmen
 
     const addMaterial = () => {
         if (!newMaterial.name.trim()) {
-            Swal.fire("Atención", "El nombre del material es requerido", "warning");
+            toast.warning("El nombre del material es requerido");
             return;
         }
 
@@ -85,7 +85,7 @@ const GarmentForm = memo(function GarmentForm({ id, onClose, onSuccess }: Garmen
         e.preventDefault();
 
         if (!formData.name?.trim()) {
-            Swal.fire("Error", "El nombre de la prenda es requerido", "error");
+            toast.error("El nombre de la prenda es requerido");
             return;
         }
 
@@ -93,23 +93,15 @@ const GarmentForm = memo(function GarmentForm({ id, onClose, onSuccess }: Garmen
         try {
             if (id) {
                 await updateGarment(id, formData as Garment);
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: 'Prenda actualizada', showConfirmButton: false, timer: 2500,
-                    background: '#18181b', color: '#fff',
-                });
+                toast.success('Prenda actualizada');
             } else {
                 await saveGarment(formData as Omit<Garment, "id">);
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: 'Prenda creada exitosamente', showConfirmButton: false, timer: 2500,
-                    background: '#18181b', color: '#fff',
-                });
+                toast.success('Prenda creada exitosamente');
             }
             onSuccess();
         } catch (error) {
             console.error("Error saving garment:", error);
-            Swal.fire("Error", "No se pudo guardar la prenda", "error");
+            toast.error("No se pudo guardar la prenda");
         } finally {
             setLoading(false);
         }

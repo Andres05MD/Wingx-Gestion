@@ -12,6 +12,7 @@ import { StockProvider } from "@/context/StockContext";
 import { BolsosProvider } from "@/context/BolsosContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,6 +40,7 @@ export default function RootLayout({
                         <NotificationsProvider>
                           <ErrorBoundary>
                             <Shell>{children}</Shell>
+                            <Toaster richColors position="top-right" theme="dark" />
                           </ErrorBoundary>
                         </NotificationsProvider>
                       </BolsosProvider>

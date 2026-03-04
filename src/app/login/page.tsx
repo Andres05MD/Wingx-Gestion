@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail, Lock, UserPlus, LogIn, AlertCircle, Eye, EyeOff } from "lucide-react";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 export default function LoginPage() {
     const { user, loginWithEmail, loginWithGoogle } = useAuth();

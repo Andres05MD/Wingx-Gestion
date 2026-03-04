@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, Edit, Trash, Shirt } from 'lucide-react';
 import { deleteGarmentFromStorage } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "@/components/BsBadge";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -19,23 +19,13 @@ export default function PrendasPage() {
     const [editingGarmentId, setEditingGarmentId] = useState<string | undefined>(undefined);
 
     async function handleDelete(id: string) {
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            text: "No podrás revertir esto",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar'
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm("¿Estás seguro?\n\nNo podrás revertir esto. ¿Deseas eliminar esta prenda?")) {
             try {
                 await deleteGarmentFromStorage(id);
                 await refreshGarments();
-                Swal.fire('Eliminado!', 'La prenda ha sido eliminada.', 'success');
+                toast.success('La prenda ha sido eliminada.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar la prenda.');
             }
         }
     }

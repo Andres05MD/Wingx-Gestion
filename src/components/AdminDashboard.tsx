@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { getAllUsers, resetUserPassword, Order, UserProfile, saveUserProfile, getAdminStats, AdminStats } from "@/services/storage";
 import { Users, ClipboardList, TrendingUp, DollarSign, Shirt, Search, Lock, ShieldCheckIcon, Edit2, Check, X } from "lucide-react";
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { useExchangeRate } from "@/context/ExchangeRateContext";
 import BsBadge from "./BsBadge";
 import { UserRole, getRoleDisplayName, getRoleBadgeClasses } from "@/services/roles";
@@ -44,20 +44,14 @@ export default function AdminDashboard() {
     }
 
     const handleResetPassword = async (email: string) => {
-        const result = await Swal.fire({
-            title: '¿Resetear Contraseña?',
-            text: `Se enviará un correo a ${email}`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Enviar Correo'
-        });
+        const isConfirmed = window.confirm(`¿Se enviará un correo de recuperación de contraseña a ${email}?`);
 
-        if (result.isConfirmed) {
+        if (isConfirmed) {
             try {
                 await resetUserPassword(email);
-                Swal.fire('Enviado', 'Correo de recuperación enviado.', 'success');
+                toast.success('Correo de recuperación enviado.');
             } catch (error) {
-                Swal.fire('Error', 'No se pudo enviar el correo.', 'error');
+                toast.error('No se pudo enviar el correo.');
             }
         }
     };
@@ -82,10 +76,10 @@ export default function AdminDashboard() {
             ));
 
             setEditingRole(null);
-            Swal.fire('Actualizado', `Rol cambiado a ${getRoleDisplayName(selectedRole)}`, 'success');
+            toast.success(`Rol cambiado a ${getRoleDisplayName(selectedRole)}`);
         } catch (error) {
             console.error('Error actualizando rol:', error);
-            Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
+            toast.error('No se pudo actualizar el rol.');
         }
     };
 

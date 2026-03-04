@@ -5,7 +5,7 @@ import { X, UserPlus, Users, Trash2 } from 'lucide-react';
 import { addParticipante, deleteParticipante, ParticipanteBolso, Bolso } from '@/services/storage';
 import { useClients } from '@/context/ClientsContext';
 import { FormInput, FormSelect } from '@/components/ui';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 interface GestionParticipantesModalProps {
     bolso: Bolso;
@@ -42,7 +42,7 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
         if (savingRef.current) return;
 
         if (espaciosDisponibles <= 0) {
-            Swal.fire({ icon: 'warning', title: 'Bolso lleno', text: `Este bolso ya tiene ${bolso.cantidadParticipantes} participantes.`, background: '#18181b', color: '#fff' });
+            window.alert(`Bolso lleno\n\nEste bolso ya tiene ${bolso.cantidadParticipantes} participantes.`);
             return;
         }
 
@@ -51,13 +51,13 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
 
         if (modo === 'manual') {
             if (!nombreManual.trim()) {
-                Swal.fire({ icon: 'warning', title: 'Nombre requerido', background: '#18181b', color: '#fff' });
+                toast.error('Nombre requerido');
                 return;
             }
             nombre = nombreManual.trim();
         } else {
             if (!clienteSeleccionado) {
-                Swal.fire({ icon: 'warning', title: 'Selecciona un cliente', background: '#18181b', color: '#fff' });
+                toast.error('Selecciona un cliente');
                 return;
             }
             const cliente = clients.find(c => c.id === clienteSeleccionado);
@@ -81,14 +81,10 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
             setNombreManual('');
             setClienteSeleccionado('');
             onUpdated();
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: `${nombre} agregado al turno ${siguienteTurno}`,
-                showConfirmButton: false, timer: 2000, background: '#18181b', color: '#fff',
-            });
+            toast.success(`${nombre} agregado al turno ${siguienteTurno}`);
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'Error al agregar participante', background: '#18181b', color: '#fff' });
+            toast.error('Error al agregar participante');
         } finally {
             savingRef.current = false;
             setSaving(false);
@@ -96,25 +92,15 @@ export default function GestionParticipantesModal({ bolso, participantes, onClos
     };
 
     const handleEliminar = async (p: ParticipanteBolso) => {
-        const result = await Swal.fire({
-            title: `¿Eliminar a ${p.nombre}?`,
-            text: 'Se eliminarán también sus pagos asociados.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#3f3f46',
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar',
-            background: '#18181b',
-            color: '#fff',
-        });
-
-        if (result.isConfirmed && p.id) {
-            try {
-                await deleteParticipante(bolso.id!, p.id);
-                onUpdated();
-            } catch {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+        if (window.confirm(`¿Eliminar a ${p.nombre}?\n\nSe eliminarán también sus pagos asociados.`)) {
+            if (p.id) {
+                try {
+                    await deleteParticipante(bolso.id!, p.id);
+                    onUpdated();
+                    toast.success('Participante eliminado');
+                } catch {
+                    toast.error('No se pudo eliminar el participante.');
+                }
             }
         }
     };

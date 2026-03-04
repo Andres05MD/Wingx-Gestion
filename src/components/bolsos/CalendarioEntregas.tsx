@@ -3,7 +3,7 @@
 import { Calendar, CheckCircle2, Clock, Package } from 'lucide-react';
 import { ParticipanteBolso, Bolso, PagoBolso, updateParticipante } from '@/services/storage';
 import { addDays } from 'date-fns';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 interface CalendarioEntregasProps {
     bolso: Bolso;
@@ -29,40 +29,17 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
         if (!participante.id || !bolso.id) return;
 
         if (!puedeEntregar(participante.turnoEntrega)) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Fondos insuficientes',
-                html: `El fondo actual (<b>$${totalRecaudado.toFixed(2)}</b>) no cubre el costo de fabricación para el turno #${participante.turnoEntrega} (<b>$${(bolso.precioPrenda * participante.turnoEntrega).toFixed(2)}</b> requeridos).`,
-                background: '#18181b',
-                color: '#fff',
-            });
+            window.alert(`Fondos insuficientes\n\nEl fondo actual ($${totalRecaudado.toFixed(2)}) no cubre el costo de fabricación para el turno #${participante.turnoEntrega} ($${(bolso.precioPrenda * participante.turnoEntrega).toFixed(2)} requeridos).`);
             return;
         }
 
-        const result = await Swal.fire({
-            title: `Confirmar Entrega`,
-            html: `¿Marcar prenda como entregada a <b>${participante.nombre}</b> (Turno #${participante.turnoEntrega})?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            cancelButtonColor: '#3f3f46',
-            confirmButtonText: 'Sí, entregar',
-            cancelButtonText: 'Cancelar',
-            background: '#18181b',
-            color: '#fff',
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm(`Confirmar Entrega\n\n¿Marcar prenda como entregada a ${participante.nombre} (Turno #${participante.turnoEntrega})?`)) {
             try {
                 await updateParticipante(bolso.id, participante.id, { prendaEntregada: true });
                 onEntregaActualizada();
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: `Prenda entregada a ${participante.nombre}`,
-                    showConfirmButton: false, timer: 2000, background: '#18181b', color: '#fff',
-                });
+                toast.success(`Prenda entregada a ${participante.nombre}`);
             } catch {
-                Swal.fire('Error', 'No se pudo registrar la entrega.', 'error');
+                toast.error('No se pudo registrar la entrega.');
             }
         }
     };
@@ -99,10 +76,10 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
                             {/* Dot */}
                             <div className="relative z-10 flex-shrink-0 mt-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${p.prendaEntregada
-                                        ? 'bg-emerald-500/20 border-2 border-emerald-500'
-                                        : fondoSuficiente
-                                            ? 'bg-amber-500/20 border-2 border-amber-500/50'
-                                            : 'bg-white/5 border-2 border-white/10'
+                                    ? 'bg-emerald-500/20 border-2 border-emerald-500'
+                                    : fondoSuficiente
+                                        ? 'bg-amber-500/20 border-2 border-amber-500/50'
+                                        : 'bg-white/5 border-2 border-white/10'
                                     }`}>
                                     {p.prendaEntregada ? (
                                         <CheckCircle2 size={14} className="text-emerald-400" />
@@ -139,8 +116,8 @@ export default function CalendarioEntregas({ bolso, participantes, pagos, onEntr
                                             onClick={() => handleMarcarEntregada(p)}
                                             disabled={!fondoSuficiente}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 min-h-[36px] ${fondoSuficiente
-                                                    ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/40'
-                                                    : 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
+                                                ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/40'
+                                                : 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
                                                 }`}
                                             title={!fondoSuficiente ? 'Fondos insuficientes para fabricar esta unidad' : 'Marcar como entregada'}
                                         >

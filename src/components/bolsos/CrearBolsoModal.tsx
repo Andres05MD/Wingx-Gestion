@@ -5,7 +5,7 @@ import { X, Wallet, Users, DollarSign, Shirt, Calculator } from 'lucide-react';
 import { saveBolso } from '@/services/storage';
 import { useGarments } from '@/context/GarmentsContext';
 import { FormInput, FormSelect, FormDatePicker } from '@/components/ui';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 interface CrearBolsoModalProps {
     onClose: () => void;
@@ -48,15 +48,15 @@ export default function CrearBolsoModal({ onClose, onCreated }: CrearBolsoModalP
         if (saving) return; // Previene doble click accidentales
 
         if (!nombre.trim()) {
-            Swal.fire({ icon: 'warning', title: 'Nombre requerido', background: '#18181b', color: '#fff' });
+            toast.error('Nombre requerido');
             return;
         }
         if (cantidadParticipantes < 2) {
-            Swal.fire({ icon: 'warning', title: 'Se requieren al menos 2 participantes', background: '#18181b', color: '#fff' });
+            toast.error('Se requieren al menos 2 participantes');
             return;
         }
         if (precioPrenda <= 0) {
-            Swal.fire({ icon: 'warning', title: 'El precio de la prenda debe ser mayor a 0', background: '#18181b', color: '#fff' });
+            toast.error('El precio de la prenda debe ser mayor a 0');
             return;
         }
 
@@ -79,16 +79,12 @@ export default function CrearBolsoModal({ onClose, onCreated }: CrearBolsoModalP
 
             await saveBolso(payload);
 
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Bolso creado exitosamente',
-                showConfirmButton: false, timer: 2500, background: '#18181b', color: '#fff',
-            });
+            toast.success('Bolso creado exitosamente');
 
             onCreated();
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'Error al crear el bolso', background: '#18181b', color: '#fff' });
+            toast.error('Error al crear el bolso');
         } finally {
             setSaving(false);
         }

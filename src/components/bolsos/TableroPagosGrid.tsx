@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { DollarSign, Check, Clock, Plus } from 'lucide-react';
 import { addPago, PagoBolso, ParticipanteBolso, Bolso } from '@/services/storage';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 interface TableroPagosGridProps {
     bolso: Bolso;
@@ -36,46 +36,30 @@ export default function TableroPagosGrid({ bolso, participantes, pagos, onPagoRe
     const handleRegistrarPago = async (participante: ParticipanteBolso, numeroCuota: number) => {
         if (!participante.id || !bolso.id) return;
 
-        const result = await Swal.fire({
-            title: `Registrar Pago`,
-            html: `<b>${participante.nombre}</b> — Cuota #${numeroCuota}<br/><span style="color:#a1a1aa">Monto sugerido: $${bolso.cuotaPorCliente.toFixed(2)}</span>`,
-            input: 'number',
-            inputLabel: 'Monto del pago',
-            inputValue: bolso.cuotaPorCliente,
-            inputAttributes: { min: '0.01', step: '0.01' },
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Registrar',
-            cancelButtonText: 'Cancelar',
-            background: '#18181b',
-            color: '#fff',
-            preConfirm: (value: string) => {
-                const monto = parseFloat(value);
-                if (monto <= 0) {
-                    Swal.showValidationMessage('El monto debe ser mayor a 0');
-                    return false;
-                }
-                return monto;
-            }
-        });
+        const result = window.prompt(
+            `Registrar Pago\n\n${participante.nombre} — Cuota #${numeroCuota}\nMonto sugerido: $${bolso.cuotaPorCliente.toFixed(2)}\n\nIngresa el monto del pago:`,
+            bolso.cuotaPorCliente.toString()
+        );
 
-        if (result.isConfirmed && result.value) {
+        if (result !== null) {
+            const monto = parseFloat(result);
+            if (isNaN(monto) || monto <= 0) {
+                toast.error('El monto debe ser numérico y mayor a 0');
+                return;
+            }
+
             setRegistrando(true);
             try {
                 await addPago(bolso.id, {
                     participanteId: participante.id,
                     numeroCuota,
-                    monto: result.value,
+                    monto: monto,
                     fechaPago: new Date().toISOString(),
                 });
                 onPagoRegistrado();
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: `Pago de $${result.value.toFixed(2)} registrado`,
-                    showConfirmButton: false, timer: 2000, background: '#18181b', color: '#fff',
-                });
+                toast.success(`Pago de $${monto.toFixed(2)} registrado`);
             } catch {
-                Swal.fire('Error', 'No se pudo registrar el pago.', 'error');
+                toast.error('No se pudo registrar el pago.');
             } finally {
                 setRegistrando(false);
             }

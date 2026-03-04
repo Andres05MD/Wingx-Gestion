@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo } from "react";
 import { Client, saveClient, updateClient } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { X, Ruler, User, Phone, FileText } from "lucide-react";
 import { FormInput } from "@/components/ui";
 
@@ -69,15 +69,15 @@ const ClientForm = memo(function ClientForm({ initialData, onClose, onSuccess }:
         try {
             if (initialData && initialData.id) {
                 await updateClient(initialData.id, dataToSave);
-                Swal.fire("Éxito", "Cliente actualizado correctamente", "success");
+                toast.success("Cliente actualizado correctamente");
             } else {
                 await saveClient(dataToSave as Client);
-                Swal.fire("Éxito", "Cliente creado correctamente", "success");
+                toast.success("Cliente creado correctamente");
             }
             onSuccess();
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "Ocurrió un error al guardar", "error");
+            toast.error("Ocurrió un error al guardar");
         } finally {
             setLoading(false);
         }

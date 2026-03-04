@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { saveStoreProduct, StoreProduct } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { X, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette, Plus, Upload, Camera, Loader2 } from "lucide-react";
 import { FormInput, FormTextarea } from '@/components/ui';
 import { IKContext, IKUpload } from 'imagekitio-react';
@@ -132,16 +132,11 @@ export default function NuevoProductoModal({ onClose, onSuccess }: NuevoProducto
 
         try {
             await saveStoreProduct(productData);
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Producto publicado en la tienda',
-                showConfirmButton: false, timer: 2500,
-                background: '#18181b', color: '#fff',
-            });
+            toast.success('Producto publicado en la tienda');
             onSuccess();
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "No se pudo guardar", "error");
+            toast.error("No se pudo guardar");
         } finally {
             setLoading(false);
         }
@@ -343,16 +338,12 @@ export default function NuevoProductoModal({ onClose, onSuccess }: NuevoProducto
                                     const newImages = [...images, res.url];
                                     setImages(newImages);
                                     if (!imageUrl) setImageUrl(res.url);
-                                    Swal.fire({
-                                        toast: true, icon: 'success', title: 'Imagen agregada',
-                                        position: 'top-end', showConfirmButton: false, timer: 2000,
-                                        background: '#18181b', color: '#fff',
-                                    });
+                                    toast.success('Imagen agregada');
                                 }}
                                 onError={(err: any) => {
                                     setUploading(false);
                                     console.error("Upload error", err);
-                                    Swal.fire("Error", "No se pudo subir la imagen", "error");
+                                    toast.error("No se pudo subir la imagen");
                                 }}
                                 accept="image/*"
                                 style={{ display: 'none' }}

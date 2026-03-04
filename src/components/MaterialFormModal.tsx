@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { saveMaterial, Material } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from 'sonner';
 import { X, ShoppingCart, DollarSign } from "lucide-react";
 import { FormInput } from "@/components/ui";
 import BsBadge from "@/components/BsBadge";
@@ -34,21 +34,17 @@ export default function MaterialFormModal({ onClose, onSuccess }: MaterialFormMo
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.name?.trim()) {
-            Swal.fire("Atención", "El nombre es requerido", "warning");
+            toast.warning("El nombre es requerido");
             return;
         }
 
         setLoading(true);
         try {
             await saveMaterial(formData as Material);
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Material agregado', showConfirmButton: false, timer: 2500,
-                background: '#18181b', color: '#fff',
-            });
+            toast.success('Material agregado');
             onSuccess();
         } catch (error) {
-            Swal.fire('Error', 'No se pudo guardar', 'error');
+            toast.error('No se pudo guardar el material');
         } finally {
             setLoading(false);
         }

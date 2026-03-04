@@ -31,7 +31,7 @@ import {
     onSnapshot
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 // Tipos
 interface PagoMovilData {
@@ -150,27 +150,12 @@ export default function VerificacionPagosPage() {
         const orderId = order.id.slice(0, 8).toUpperCase();
         const totalAmount = order.totalPrice?.toLocaleString('es-VE', { minimumFractionDigits: 2 }) || '0';
 
-        // Confirmación con SweetAlert2
-        const result = await Swal.fire({
-            title: '¿Aprobar este pago?',
-            html: `
-                <div class="text-left space-y-2">
-                    <p><strong>Cliente:</strong> ${customerName}</p>
-                    <p><strong>Orden:</strong> #${orderId}</p>
-                    <p><strong>Monto:</strong> $${totalAmount}</p>
-                </div>
-            `,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: '✅ Sí, aprobar',
-            cancelButtonText: 'Cancelar',
-            background: '#1e293b',
-            color: '#f1f5f9',
-        });
+        // Confirmación nativa
+        const result = window.confirm(
+            `¿Aprobar este pago?\n\nCliente: ${customerName}\nOrden: #${orderId}\nMonto: $${totalAmount}\n\n¿Deseas continuar?`
+        );
 
-        if (!result.isConfirmed) return;
+        if (!result) return;
 
         setProcessingId(order.id);
         try {
@@ -208,33 +193,20 @@ export default function VerificacionPagosPage() {
             formattedPhone = formattedPhone.replace('+', '');
 
             // Mostrar éxito y preguntar si notificar
-            const notifyResult = await Swal.fire({
-                title: '¡Pago Aprobado!',
-                text: '¿Deseas notificar al cliente por WhatsApp?',
-                icon: 'success',
-                showCancelButton: true,
-                confirmButtonColor: '#25d366',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: '📱 Sí, notificar',
-                cancelButtonText: 'No, solo aprobar',
-                background: '#1e293b',
-                color: '#f1f5f9',
-            });
+            const notifyResult = window.confirm(
+                "¡Pago Aprobado!\n\n¿Deseas notificar al cliente por WhatsApp?"
+            );
 
-            if (notifyResult.isConfirmed) {
+            if (notifyResult) {
                 const whatsappUrl = `https://wa.me/${formattedPhone}?text=${whatsappMessage}`;
                 window.open(whatsappUrl, '_blank');
+            } else {
+                toast.success('Pago aprobado (sin notificar)');
             }
 
         } catch (err) {
             console.error('Error al aprobar pago:', err);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo aprobar el pago. Inténtalo de nuevo.',
-                icon: 'error',
-                background: '#1e293b',
-                color: '#f1f5f9',
-            });
+            toast.error('No se pudo aprobar el pago. Inténtalo de nuevo.');
         } finally {
             setProcessingId(null);
         }
@@ -247,29 +219,12 @@ export default function VerificacionPagosPage() {
         const customerName = order.customer?.name || order.clientName || 'Cliente';
         const orderId = order.id.slice(0, 8).toUpperCase();
 
-        // Pedir motivo con SweetAlert2
-        const { value: reason, isConfirmed } = await Swal.fire({
-            title: '¿Rechazar este pago?',
-            html: `
-                <div class="text-left mb-4">
-                    <p><strong>Cliente:</strong> ${customerName}</p>
-                    <p><strong>Orden:</strong> #${orderId}</p>
-                </div>
-            `,
-            input: 'text',
-            inputLabel: 'Motivo del rechazo (opcional)',
-            inputPlaceholder: 'Ej: Referencia no encontrada',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: '❌ Sí, rechazar',
-            cancelButtonText: 'Cancelar',
-            background: '#1e293b',
-            color: '#f1f5f9',
-        });
+        // Pedir motivo con prompt nativo
+        const isConfirmed = window.confirm(`¿Rechazar este pago?\n\nCliente: ${customerName}\nOrden: #${orderId}\n\nSe te pedirá un motivo opcional si aceptas.`);
 
         if (!isConfirmed) return;
+
+        const reason = window.prompt('Motivo del rechazo (opcional):\nEj: Referencia no encontrada');
 
         setProcessingId(order.id);
         try {
@@ -283,24 +238,10 @@ export default function VerificacionPagosPage() {
             // Actualizar lista local
             setOrders(prev => prev.filter(o => o.id !== order.id));
 
-            Swal.fire({
-                title: 'Pago Rechazado',
-                text: 'El cliente será notificado del rechazo.',
-                icon: 'info',
-                background: '#1e293b',
-                color: '#f1f5f9',
-                timer: 2000,
-                showConfirmButton: false,
-            });
+            toast.info('Pago Rechazado. El cliente será notificado.');
         } catch (err) {
             console.error('Error al rechazar pago:', err);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo rechazar el pago. Inténtalo de nuevo.',
-                icon: 'error',
-                background: '#1e293b',
-                color: '#f1f5f9',
-            });
+            toast.error('No se pudo rechazar el pago. Inténtalo de nuevo.');
         } finally {
             setProcessingId(null);
         }

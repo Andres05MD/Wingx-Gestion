@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, Re
 import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 interface PendingOrder {
     id: string;
@@ -53,37 +53,15 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         if (Notification.permission === 'granted') return;
         if (Notification.permission === 'denied') return;
 
-        const result = await Swal.fire({
-            title: '🔔 Activar Notificaciones',
-            html: `
-                <p class="text-sm text-zinc-300 mb-2">
-                    Recibe alertas instantáneas cuando llegue un nuevo pedido desde la tienda.
-                </p>
-                <p class="text-xs text-zinc-400">
-                    Esto te permitirá atender pedidos más rápido.
-                </p>
-            `,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: '✅ Sí, activar',
-            cancelButtonText: 'Ahora no',
-            background: '#1e293b',
-            color: '#f1f5f9',
-        });
+        const result = window.confirm(
+            "🔔 Activar Notificaciones\n\nRecibe alertas instantáneas cuando llegue un nuevo pedido desde la tienda.\nEsto te permitirá atender pedidos más rápido.\n\n¿Deseas activar las notificaciones?"
+        );
 
-        if (result.isConfirmed) {
+        if (result) {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-                Swal.fire({
-                    title: '¡Listo!',
-                    text: 'Recibirás notificaciones de nuevos pedidos.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    background: '#1e293b',
-                    color: '#f1f5f9',
+                toast.success('¡Listo! Recibirás notificaciones de nuevos pedidos.', {
+                    duration: 3000,
                 });
             }
         }

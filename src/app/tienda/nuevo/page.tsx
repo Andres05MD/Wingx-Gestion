@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveStoreProduct, StoreProduct } from "@/services/storage";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { ArrowLeft, Save, Shirt, Tag, DollarSign, Image as ImageIcon, Ruler, ShoppingBag, Star, Palette, Plus, X } from "lucide-react";
 import { FormInput, FormTextarea } from '@/components/ui';
 import Link from "next/link";
@@ -133,11 +133,11 @@ export default function NewProductPage() {
 
         try {
             await saveStoreProduct(productData);
-            Swal.fire("¡Éxito!", "Producto publicado en la tienda", "success");
+            toast.success("Producto publicado en la tienda");
             router.push("/tienda");
         } catch (error) {
             console.error(error);
-            Swal.fire("Error", "No se pudo guardar", "error");
+            toast.error("No se pudo guardar el producto");
         } finally {
             setLoading(false);
         }
@@ -348,18 +348,11 @@ export default function NewProductPage() {
                                                 // Set first image as main automatically if none set
                                                 if (!imageUrl) setImageUrl(res.url);
 
-                                                Swal.fire({
-                                                    toast: true,
-                                                    icon: 'success',
-                                                    title: 'Imagen agregada',
-                                                    position: 'top-end',
-                                                    showConfirmButton: false,
-                                                    timer: 2000
-                                                });
+                                                toast.success('Imagen agregada');
                                             }}
                                             onError={(err: any) => {
                                                 console.error("Upload error", err);
-                                                Swal.fire("Error", "No se pudo subir la imagen", "error");
+                                                toast.error("No se pudo subir la imagen");
                                             }}
                                             className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-zinc-100 hover:file:bg-purple-500/20 transition-all cursor-pointer"
                                         />

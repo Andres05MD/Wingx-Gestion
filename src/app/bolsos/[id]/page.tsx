@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Wallet, Users, Calendar, DollarSign, Settings, Trash2 } from 'lucide-react';
 import { getBolsoById, getParticipantes, getPagos, updateBolso, deleteBolso, Bolso, ParticipanteBolso, PagoBolso } from '@/services/storage';
 import { useAuth } from '@/context/AuthContext';
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import GestionParticipantesModal from '@/components/bolsos/GestionParticipantesModal';
 import TableroPagosGrid from '@/components/bolsos/TableroPagosGrid';
 import CalendarioEntregas from '@/components/bolsos/CalendarioEntregas';
@@ -49,25 +49,13 @@ export default function BolsoDetallePage() {
 
     const handleDelete = async () => {
         if (!bolso?.id) return;
-        const result = await Swal.fire({
-            title: '¿Eliminar bolso?',
-            html: `Se eliminará "<b>${bolso.nombre}</b>" y todos sus datos.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#3f3f46',
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar',
-            background: '#18181b',
-            color: '#fff',
-        });
-
-        if (result.isConfirmed) {
+        if (window.confirm(`¿Eliminar bolso?\n\nSe eliminará "${bolso.nombre}" y todos sus datos.`)) {
             try {
                 await deleteBolso(bolso.id);
                 router.push('/bolsos');
+                toast.success('Bolso eliminado');
             } catch {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                toast.error('No se pudo eliminar el bolso.');
             }
         }
     };
@@ -77,13 +65,9 @@ export default function BolsoDetallePage() {
         try {
             await updateBolso(bolso.id, { estado: newEstado });
             setBolso({ ...bolso, estado: newEstado });
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: `Estado → ${newEstado.charAt(0).toUpperCase() + newEstado.slice(1)}`,
-                showConfirmButton: false, timer: 2000, background: '#18181b', color: '#fff',
-            });
+            toast.success(`Estado → ${newEstado.charAt(0).toUpperCase() + newEstado.slice(1)}`);
         } catch {
-            Swal.fire('Error', 'No se pudo actualizar.', 'error');
+            toast.error('No se pudo actualizar el estado.');
         }
     };
 
@@ -193,8 +177,8 @@ export default function BolsoDetallePage() {
                                 key={estado}
                                 onClick={() => handleStatusChange(estado)}
                                 className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${isActive
-                                        ? `${s.bg} ${s.text} border ${s.border} ring-2 ring-offset-2 ring-offset-zinc-950 ring-white/10`
-                                        : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:bg-white/5 hover:text-zinc-300'
+                                    ? `${s.bg} ${s.text} border ${s.border} ring-2 ring-offset-2 ring-offset-zinc-950 ring-white/10`
+                                    : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:bg-white/5 hover:text-zinc-300'
                                     }`}
                             >
                                 <span className={`w-1.5 h-1.5 rounded-full ${isActive ? s.dot : 'bg-zinc-600'}`}></span>
@@ -210,8 +194,8 @@ export default function BolsoDetallePage() {
                 <button
                     onClick={() => setActiveTab('pagos')}
                     className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'pagos'
-                            ? 'bg-white text-black'
-                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+                        ? 'bg-white text-black'
+                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
                         }`}
                 >
                     Tablero de Pagos
@@ -219,8 +203,8 @@ export default function BolsoDetallePage() {
                 <button
                     onClick={() => setActiveTab('entregas')}
                     className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'entregas'
-                            ? 'bg-white text-black'
-                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+                        ? 'bg-white text-black'
+                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
                         }`}
                 >
                     Calendario de Entregas
