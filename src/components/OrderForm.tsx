@@ -201,7 +201,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
                     const success = await updateStockByGarmentId(garmentId, -1, user.uid);
                     if (success) {
                         orderData.status = "Entregado";
-                        toast.info('Se descontó 1 unidad del inventario', { title: 'Stock Actualizado' });
+                        toast.info('Se descontó 1 unidad del inventario', { description: 'Stock Actualizado' });
                     } else {
                         toast.warning("No se pudo descontar del stock");
                     }
@@ -254,7 +254,7 @@ const OrderForm = memo(function OrderForm({ id, onClose, onSuccess }: OrderFormP
             }
         } catch (e) {
             console.error("Error saving materials:", e);
-            toast.warning('No se pudieron agregar algunos materiales a la lista', { title: 'Advertencia' });
+            toast.warning('No se pudieron agregar algunos materiales a la lista', { description: 'Advertencia' });
         }
     }
 
